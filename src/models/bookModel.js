@@ -5,13 +5,21 @@ const bookSchema = new mongoose.Schema( {
     name: String,
     author_id: {
         type: ObjectId,
-        ref: "Author"
+        ref: "Author1"
+    },
+    publiser_id: {
+        type:ObjectId,
+        ref:"Publiser"
     },
     price: Number,
-    ratings: Number
+    ratings: Number,
+    isHardCover:{
+        type:String,
+        default:false
+    }
 
 
 }, { timestamps: true });
 
 
-module.exports = mongoose.model('LibraryBook', bookSchema)
+module.exports = mongoose.model('LibraryBook', bookSchema)//libraryBooks
