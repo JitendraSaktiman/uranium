@@ -1,12 +1,12 @@
 const { count } = require("console");
 const AuthorModel = require("../models/authorModel");
-const AllBookModel= require("../models/allBookModel");
-const authorModel = require("../models/authorModel");
+const BookModel= require("../models/allBookModel");
+// const authorModel = require("../models/authorModel");
 
 const createAllBook= async function(req, res){
 
     let deta = req.body
-    let savedData = await AllBookModel.create(deta)
+    let savedData = await BookModel.create(deta)
     res.send({msg:savedData})
 };
 
@@ -19,24 +19,26 @@ const surchBook= async function(req, res){
     // let data= req.body
     let givenData = await AuthorModel.find({author_name:"Chetan Bhagat"}) 
     const id = givenData[0].author_id
-    const bkName= await authorModel.find({author_id:id}) .select({bookName:1})
-    res.send({msg:bkName})  
+    console.log(id)
+    res.send(id)
+    // const bkName= await BookModel.find({author_id:id}) .select({bookName:1})
+    // res.send({msg:bkName})  
 };
 
 const getBookUpd = async function(req, res){
     // let data = req.query
-    let obtainData = await AllBookModel.find({bookName:"Two states"})
+    let obtainData = await BookModel.find({bookName:"Two states"})
     const id = obtainData[0].author_id
-    const aName = await authorModel.find({author_id:id}).select({author_name:1, _id:0})
+    const aName = await AuthorModel.find({author_id:id}).select({author_name:1, _id:0})
     const bkName = obtainData[0].bookName
-    const upPrice= await AllBookModel.findOneAndUpdate({bookName:bkName}, {price:100},{new:true}).select({price:1, _id:0})
+    const upPrice= await BookModel.findOneAndUpdate({bookName:bkName}, {price:100},{new:true}).select({price:1, _id:0})
 
     res.send({msg:aName,upPrice})
 };
 
 const getBookCost =async function (req, res){
     
-    let booksData = await AllBookModel.find({price: {$gte50,$lte:100}}) 
+    let booksData = await BookModel.find({price: {$gte50,$lte:100}}) 
     const id = booksData.map(x => x.author_id)
     
     let temp = []
