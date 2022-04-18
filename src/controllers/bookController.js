@@ -34,13 +34,13 @@ const createBook= async function (req, res) {
     let bookCreated = await bookModel.create(book)
     res.send({data: bookCreated})
 }
-
+   // 4
 const fetchbooks = async function (req, res) {
     
     let books = await bookModel.find().populate('author publisher')
     res.send({data: books})
 }
-
+//  5(a)
 const updateBooks = async function (req, res) {
     // update hardcover to true for few books
     let hardCOverPublishers = await publisherModel.find({name : {$in:['Penguin','HarperCollins'] }}).select({_id:1})
@@ -56,7 +56,24 @@ const updateBooks = async function (req, res) {
     res.send({data: books})
 }
 
+//5(b)
+
+const updatePrice= async function(req, res){
+
+    let changePrice = await authorModel.find({rating : {$gt:3.5}}).select({_id:1})
+    let array  = []
+    
+    for (let i = 0; i < changePrice.length; i++) {
+        let objId =  changePrice[i]._id 
+        array.push(objId)
+    }
+    let updPri = await bookModel.updateMany ( {rating :{$in:array}}, {$inc:{price:10}} , {new:true})
+    
+    res.send({msg : updPri})
+}
+
 module.exports.createBook= createBook
 module.exports.fetchbooks = fetchbooks
 module.exports.updateBooks = updateBooks
+module.exports.updatePrice = updatePrice
 

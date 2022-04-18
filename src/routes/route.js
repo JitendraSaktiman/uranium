@@ -20,4 +20,6 @@ router.get('/get-all-books', bookController.fetchbooks)
 
 router.put('/books', bookController.updateBooks)
 
+route.put('/updatePrice', bookController.updatePrice)
+
 module.exports = router;
