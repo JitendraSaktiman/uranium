@@ -14,7 +14,7 @@ const bookSchema = new mongoose.Schema( {
     price: Number,
     ratings: Number,
     isHardCover:{
-        type:String,
+        type:Boolean,
         default:false
     }
 
