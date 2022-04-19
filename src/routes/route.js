@@ -14,6 +14,6 @@ router.post("/devlopers", devloperController.createDevlopers  )
 
 router.get("/scholarshipDevelopers", devloperController.scholarshipDevelopers)
 
-router.get("/developers", devloperController.developers );
+router.get("/developers-query", devloperController.developers );
 
 module.exports = router;
