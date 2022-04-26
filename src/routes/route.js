@@ -17,6 +17,18 @@ router.post("/cowin/getOtp", CowinController.getOtp)
 
 // WRITE A GET API TO GET THE LIST OF ALL THE "vaccination sessions by district id" for any given district id and for any given date
 
+router.get("/cowin/districts", CowinController.getAnyDistricts)
+
+router.get("/londonWeather", CowinController.londonWeather)
+
+router.get("/tempOfCity", CowinController.tempOfCity)
+
+router.get("/weatherOfShortedCity", CowinController.cities)
+
+router.post("/memes", CowinController.memes)
+
+
+
 
 
 module.exports = router;
