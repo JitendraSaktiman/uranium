@@ -3,21 +3,29 @@ const router = express.Router();
 const authorController = require("../controllers/authorController");
 const blogsController = require("../controllers/blogController");
 const { validateAuthor, validateblog } = require('../middleware/valid');
-const { Authentication, Authrization, qauth } = require('../middleware/auth');
+const { Authentication, Authorization, qauth } = require('../middleware/auth');
 
-// Kirtan-G
+
+
+// ------------------authors API------------------------- ---------
+router.post("/authors", validateAuthor, authorController.createAuthor);
+
+router.post('/login', authorController.authorLogin);
+
+//--------------------blogs API--------------------------------- ------------
+
 router.post("/blogs", Authentication, validateblog, blogsController.createBlog);
-router.delete("/blogs/:blogId", Authentication, Authrization, blogsController.deleteBlogs);
 
-// Salman-110
-router.put("/blogs/:blogId", Authrization, blogsController.updateblogs);
-router.delete("/blogs", Authentication, qauth, blogsController.queryDeleted);
-
-//amitvsk
 router.get("/blogs", Authentication, blogsController.getBlogs);
 
-// vinitchikate
-router.post('/login', authorController.authorLogin);
-router.post("/authors", validateAuthor, authorController.createauthor);
+router.put("/blogs/:blogId", Authorization, blogsController.updateblogs);
 
+router.delete("/blogs/:blogId", Authentication, Authorization, blogsController.deleteBlogs);
+
+router.delete("/blogs", Authentication, qauth, blogsController.queryDeleted);
+
+
+ 
+
+ 
 module.exports = router;

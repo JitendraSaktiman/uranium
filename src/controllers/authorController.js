@@ -2,21 +2,22 @@ const jwt = require('jsonwebtoken');
 const authorModel = require("../models/authorModel");
 
 
-// vinitchikate
-const createauthor = async function (req, res) {
+// createAuthor
+const createAuthor = async function (req, res) {
     try {
         let data = req.body
         let author = await authorModel.create(data);
-        return res.status(201).send({ msg: author });
+        return res.status(201).send({status:true, msg: author });
     }
     catch (err) {
         return res.status(500).send({ status: false, msg: err.message })
     }
 };
-module.exports.createauthor = createauthor;
+module.exports.createAuthor = createAuthor;
 
 
-// vinitchikate
+// login
+
 const authorLogin = async function (req, res) {
     try {
         let data = req.body;

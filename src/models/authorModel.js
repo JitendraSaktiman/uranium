@@ -1,13 +1,13 @@
-// vinitchikate
+
 const mongoose = require('mongoose');
 
 const authorSchema = new mongoose.Schema(
     {
-        firstname: {
+        fname: {
             type: String,
             required: true
         },
-        lastname: {
+        lname: {
             type: String,
             required: true
         },
@@ -27,4 +27,4 @@ const authorSchema = new mongoose.Schema(
         }
     }, { timeseries: true });
 
-module.exports = mongoose.model('authorproject1', authorSchema)
+module.exports = mongoose.model('Author', authorSchema)

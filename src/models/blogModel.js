@@ -1,4 +1,4 @@
-// vinitchikate
+
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
@@ -14,7 +14,7 @@ const blogsSchema = new mongoose.Schema(
         },
         authorId: {
             type: ObjectId,
-            ref: "authorproject1",
+            ref: "Author",
             required: true
         },
         tags: [String],
@@ -38,4 +38,4 @@ const blogsSchema = new mongoose.Schema(
         }
     }, { timestamps: true })
 
-module.exports = mongoose.model('blogsproject1', blogsSchema);
+module.exports = mongoose.model('Blog', blogsSchema);

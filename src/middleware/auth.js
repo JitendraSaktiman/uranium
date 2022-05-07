@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const blogModel = require("../models/blogModel");
 
-// Kirtan-G
+// Authentication
 const Authentication = async function (req, res, next) {
     try {
         // getting token from req(header)
@@ -27,8 +27,8 @@ const Authentication = async function (req, res, next) {
 }
 module.exports.Authentication = Authentication;
 
-// Salman-110 //amitvsk
-const Authrization = async function (req, res, next) {
+// Authori
+const Authorization = async function (req, res, next) {
     try {
         let token = req.headers["x-api-key"];
         if (!token) token = req.headers["X-Api-Key"]
@@ -57,7 +57,7 @@ const Authrization = async function (req, res, next) {
         return res.status(500).send({ msg: err.message });
     }
 }
-module.exports.Authrization = Authrization;
+module.exports.Authorization = Authorization;
 
 
 const qauth = async function (req, res, next) {
@@ -81,7 +81,7 @@ const qauth = async function (req, res, next) {
         let author = blog.authorId.toString()
         console.log(author)
         if (author != decoded) {
-            return res.status(404).send("Not Authorised!!")
+            return res.status(404).send("Not Authorised")
         }
         next()
     }
