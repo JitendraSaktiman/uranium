@@ -11,9 +11,7 @@ const Createuser = async function (req, res) {
         if (!body.title) {
             return res.status(400).send({ Status: false, message: " Title is required" })
         }
-        if (body.title !== "Mr" || body.title !== "Miss" || body.title !== "Mrs") {
-            return res.status(400).send({ Status: false, message: " Title is not valid" })
-        }
+
         // Regex for name validation
         let nameRegex = /^[A-Za-z]{1}[A-Za-z ]{1,}$/
         if (!body.name) {
@@ -30,7 +28,7 @@ const Createuser = async function (req, res) {
             return res.status(400).send({ Status: false, message: " phone is required" })
         }
         if (!Phoneregex.test(body.phone)) {
-            return res.status(400).send({ Status: false, message: " Please enter a valid phone number, please use 10digit phone number " })
+            return res.status(400).send({ Status: false, message: " Please enter a valid phone number, please use 10 digit phone number " })
         }
 
         let EmailRegex = /^[A-Za-z]{1}[A-Za-z0-9._]{1,}@[A-Za-z]{2,15}[.]{1}[a-z.]{2,5}$/
@@ -64,7 +62,7 @@ const Createuser = async function (req, res) {
         }
         // regex for street 
 
-        let StreeRegex = /^[A-Za-z1-9]{1}[A-Za-z0-9/ ,]{5, }$/
+        let StreeRegex = /^[A-Za-z1-9]{1}[A-Za-z0-9/ ,]{5,}$/
 
         let PinCodeRegex = /^[1-9]{1}[0-9]{5}$/
 
@@ -79,10 +77,12 @@ const Createuser = async function (req, res) {
                 return res.status(400).send({ Status: false, message: " Please enter a valid pincode of 6 digit" })
             }
         }
+        if(body.title === "Mr" || body.title === "Miss" || body.title === "Mrs"){
 
-        let userCreate = await usermodel.create(body)
-
-        return res.status(201).send({ Status: true, message: 'Success', data: userCreate })
+            let userCreate = await usermodel.create(body)
+            return res.status(201).send({ Status: true, message: 'Success', data: userCreate })
+        }
+        return res.status(400).send({ Status: false, message: " Please enter a valid title you can use only anyone from these Mr/Miss/Mrs" })
     }
     catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
