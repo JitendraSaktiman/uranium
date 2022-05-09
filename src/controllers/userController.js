@@ -1,5 +1,7 @@
 const usermodel = require('../models/userModel')
 
+const jwt = require('jsonwebtoken')
+
 const Createuser = async function (req, res) {
 
     try {
@@ -77,7 +79,7 @@ const Createuser = async function (req, res) {
                 return res.status(400).send({ Status: false, message: " Please enter a valid pincode of 6 digit" })
             }
         }
-        if(body.title === "Mr" || body.title === "Miss" || body.title === "Mrs"){
+        if (body.title === "Mr" || body.title === "Miss" || body.title === "Mrs") {
 
             let userCreate = await usermodel.create(body)
             return res.status(201).send({ Status: true, message: 'Success', data: userCreate })
@@ -90,4 +92,32 @@ const Createuser = async function (req, res) {
 
 }
 
-module.exports.Createuser=Createuser
+module.exports.Createuser = Createuser
+
+
+const login = async function (req, res) {
+
+    let userName = req.body.email;
+    let pass = req.body.password;
+
+    let user = await usermodel.findOne({ email: userName, password: pass });
+    if (!user)
+        return res.status(400).send({
+            status: false,
+            msg: "username or the password is not correct",
+        });
+
+    let token = jwt.sign(
+        {
+            authorId: user._id.toString(),
+            country: "India",
+            organisation: "FUnctionUp",
+        },
+        "bookManagement"
+    );
+    res.setHeader("x-api-key", token);
+    res.status(200).send({ status: true, data: token });
+};
+
+
+module.exports.login = login;

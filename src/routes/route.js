@@ -8,7 +8,7 @@ const userController= require("../controllers/userController")
 router.post("/register",userController.Createuser)
 
 
-
+router.post('/login', userController.login)
 
 
 
