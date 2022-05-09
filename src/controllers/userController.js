@@ -54,7 +54,7 @@ const Createuser = async function (req, res) {
             }
         }
 
-        let Passwordregex = /^[A-Z0-9a-z]{1}[A-Za-z0-9.@#$&]{7,14}$/
+        let Passwordregex = /^[A-Z0-9a-z]{1}[A-Za-z0-9.@#$&_]{7,14}$/
 
         if (!body.password) {
             return res.status(400).send({ Status: false, message: " password is required" })
@@ -92,32 +92,64 @@ const Createuser = async function (req, res) {
 
 }
 
-module.exports.Createuser = Createuser
+
 
 
 const login = async function (req, res) {
 
-    let userName = req.body.email;
-    let pass = req.body.password;
+    try {
+        let body = req.body
 
-    let user = await usermodel.findOne({ email: userName, password: pass });
-    if (!user)
-        return res.status(400).send({
-            status: false,
-            msg: "username or the password is not correct",
-        });
+        if (Object.keys(body).length === 0) {
+            return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
+        }
 
-    let token = jwt.sign(
-        {
-            authorId: user._id.toString(),
-            country: "India",
-            organisation: "FUnctionUp",
-        },
-        "bookManagement"
-    );
-    res.setHeader("x-api-key", token);
-    res.status(200).send({ status: true, data: token });
-};
+        // regex validation
+        let EmailRegex = /^[A-Za-z]{1}[A-Za-z0-9._]{1,}@[A-Za-z]{2,15}[.]{1}[a-z.]{2,5}$/
+        let Passwordregex = /^[A-Z0-9a-z]{1}[A-Za-z0-9.@#$&]{7,14}$/
+
+        // Email validation
+
+        if (!body.email) {
+            return res.status(400).send({ Status: false, message: " email is required" })
+        }
+        if (!EmailRegex.test(body.email)) {
+            return res.status(400).send({ Status: false, message: " Please enter a valid email" })
+        }
+
+        // password validation
+
+        if (!body.password) {
+            return res.status(400).send({ Status: false, message: " password is required" })
+        }
+        if (!Passwordregex.test(body.password)) {
+            return res.status(400).send({ Status: false, message: " Please enter a valid password, minlength 8, maxxlength 15" })
+        }
+
+        // checking User Detail
+
+        let CheckUser = await usermodel.findOne({ email: body.email, password: body.password });                
+
+        if (!CheckUser) {
+            return res.status(400).send({ Status: false, message: "username or the password is not correct" });
+        }
+
+        let user_token = jwt.sign({
+
+            exp: Math.floor(Date.now() / 1000) + (60 * 60),     //Signing a token with 1 hour of expiration
+            UserId: CheckUser._id
+        
+        }, 'FunctionUp Group55');
+
+        res.setHeader("x-api-key", user_token);
+        return res.status(201).send({ status: true, data: user_token });
+    }
+    catch (err) {
+        return res.status(500).send({ Status: false, message: err.message })
+    }
+}
 
 
+
+module.exports.Createuser = Createuser
 module.exports.login = login;
