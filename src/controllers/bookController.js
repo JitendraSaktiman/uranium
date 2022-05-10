@@ -59,12 +59,12 @@ const Bookcreate = async function (req, res) {
             return res.status(400).send({ Status: false, message: " category is not in valid format" })
         }
 
-        // if (!body.subcategory) {
-        //     return res.status(400).send({ Status: false, message: " subcategory is required" })
-        // }
-        // if (!nameRegex.test(body.subcategory)) {
-        //     return res.status(400).send({ Status: false, message: " subcategory is not in valid format" })
-        // }
+        if (!body.subcategory) {
+            return res.status(400).send({ Status: false, message: " subcategory is required" })
+        }
+        if (!nameRegex.test(body.subcategory)) {
+            return res.status(400).send({ Status: false, message: " subcategory is not in valid format" })
+        }
 
         if (body.reviews) {
             if (!ReviewRegex.test(body.reviews)) {
@@ -73,9 +73,9 @@ const Bookcreate = async function (req, res) {
         }
         // YYYY-MM-DD , we have to use validation for this
 
-        // if (!body.releasedAt) {
-        //     return res.status(400).send({ Status: false, message: " releasedAt is required,please use this format YYYY-MM-DD " })
-        // }
+        if (!body.releasedAt) {
+            return res.status(400).send({ Status: false, message: " releasedAt is required,please use this format YYYY-MM-DD " })
+        }
 
         let Checkuniquedata = await BookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }] })
         if (Checkuniquedata) {
