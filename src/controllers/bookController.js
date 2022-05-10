@@ -119,7 +119,7 @@ const GetBook = async function(req,res){
     try{
         // Returns all books in the collection that aren't deleted. Return only book _id, title, excerpt, userId, category, releasedAt, reviews field. Response example
 
-        let Checkbook= await bookModel.find({isDeleted:false}).select({_id:1,title:1,excerpt:1,userId:1, category:1, releasedAt:1, reviews:1 })
+        let Checkbook= await bookModel.find({isDeleted:false}).select({_id:1,title:1,excerpt:1,userId:1, category:1, releasedAt:1, reviews:1 }).sort({title:1})
         
         return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
 
