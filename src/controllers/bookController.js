@@ -8,7 +8,7 @@ const formatYmd = date => date.toISOString().slice(0, 10);
 
 let date = formatYmd(new Date());
 
-
+console.log("date:    ",date)
 
 // all regex
 
@@ -59,12 +59,12 @@ const Bookcreate = async function (req, res) {
             return res.status(400).send({ Status: false, message: " category is not in valid format" })
         }
 
-        if (!body.subcategory) {
-            return res.status(400).send({ Status: false, message: " subcategory is required" })
-        }
-        if (!nameRegex.test(body.subcategory)) {
-            return res.status(400).send({ Status: false, message: " subcategory is not in valid format" })
-        }
+        // if (!body.subcategory) {
+        //     return res.status(400).send({ Status: false, message: " subcategory is required" })
+        // }
+        // if (!nameRegex.test(body.subcategory)) {
+        //     return res.status(400).send({ Status: false, message: " subcategory is not in valid format" })
+        // }
 
         if (body.reviews) {
             if (!ReviewRegex.test(body.reviews)) {
@@ -87,6 +87,7 @@ const Bookcreate = async function (req, res) {
             }
         }
 
+        console.log("body:    ",body)
 
         let CreateBook = await BookModel.create(body)
 
