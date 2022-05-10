@@ -1,4 +1,4 @@
-# Uranium
+# Thorium
 
 ## Project - Books Management
 

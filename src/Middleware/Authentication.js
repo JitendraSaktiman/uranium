@@ -68,17 +68,21 @@ const Mid2 = async function (req, res, next) {
 
             let CheckBooks = await BookModel.findOne({ $or: [{ userId: query.userId, category: query.category }, { userId: query.userId, subcategory: query.subcategory }, { subcategory: query.subcategory, category: query.category }] })
 
-            let CheckUser = await userModel.findOne({ _id: CheckBooks.userId });
-            if (!CheckUser) {
-                return res.status(400).send({ Status: false, message: "username or the password is not correct" });
+            if(!CheckBooks){
+                return res.status(400).send({ Status: false, message: "Book does not exist" });
             }
+
+            // let CheckUser = await userModel.findOne({ _id: CheckBooks.userId });
+            // if (!CheckUser) {
+            //     return res.status(400).send({ Status: false, message: "user id not found" });
+            // }
 
             let Decode_token = jwt.verify(token, "FunctionUp Group55")
 
             console.log("decode token    ", Decode_token)
 
             if (Decode_token) {
-                if (Decode_token.UserId != CheckUser._id) {
+                if (Decode_token.UserId != CheckBooks.userId) {
                     return res.status(400).send({ Status: false, message: "This is not valid token for this User/Books" })
                 }
                 return next()
