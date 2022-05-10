@@ -16,5 +16,7 @@ router.post('/books',Middleware.Mid1,BookController.Bookcreate)
 
 router.get('/books',Middleware.Mid2,BookController.GetBook)
 
+router.get('/books/:bookId',Middleware.Mid3,BookController.resultBook)
+
 
 module.exports = router;

@@ -30,14 +30,14 @@ const Mid1 = async function (req, res, next) {
             return res.status(400).send({ Status: false, message: " No user found from given userId" })
         }
 
-         try {
-        let Decode_token = jwt.verify(token, "FunctionUp Group55")
-        if (Decode_token) {
-            if (Decode_token.UserId != CheckUser._id) {
-                return res.status(400).send({ Status: false, message: "This is not valid token for this User/Books" })
+        try {
+            let Decode_token = jwt.verify(token, "FunctionUp Group55")
+            if (Decode_token) {
+                if (Decode_token.UserId != CheckUser._id) {
+                    return res.status(400).send({ Status: false, message: "This is not valid token for this User/Books" })
+                }
+                return next()
             }
-            return next()
-        }
         }
         catch (err) {
             return res.status(400).send({ Status: false, message: "token is not valid" })
@@ -95,5 +95,51 @@ const Mid2 = async function (req, res, next) {
     }
 }
 
+const Mid3 = async function (req, res, next) {
+    try {
+        let data = req.params
+        let header = req.headers
+
+        let token = header['x-api-key'] || header['X-API-KEY']
+
+        if (!token) {
+            return res.status(400).send({ Status: false, message: " Please enter the token" })
+        }
+
+
+        if (!data) {
+            return res.status(400).send({ Status: false, message: "request params is empty" })
+        }
+
+        let checkBook = await BookModel.findById({ _id: data.bookId })
+
+        if (!checkBook) {
+            return res.status(400).send({ Status: false, message: "Book does not exist" })
+        }
+
+        let checkuser = await userModel.findOne({ _id: checkBook.userId })
+
+        if (!checkuser) {
+            return res.status(400).send({ Status: false, message: "user id does not exist" })
+        }
+
+        try {
+            let Decode_token = jwt.verify(token, "FunctionUp Group55")
+            if (Decode_token) {
+                if (Decode_token.UserId != checkuser._id) {
+                    return res.status(400).send({ Status: false, message: "This is not valid token for this User/Books" })
+                }
+                return next()
+            }
+        }
+        catch (err) {
+            return res.status(400).send({ Status: false, message: "token is not valid" })
+        }
+    } catch (err) {
+        return res.status(500).send({ Status: false, message: err.message })
+    }
+}
+
 module.exports.Mid1 = Mid1
 module.exports.Mid2 = Mid2
+module.exports.Mid3 = Mid3

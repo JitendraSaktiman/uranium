@@ -8,7 +8,7 @@ const formatYmd = date => date.toISOString().slice(0, 10);
 
 let date = formatYmd(new Date());
 
-console.log("date:    ",date)
+
 
 // all regex
 
@@ -19,6 +19,7 @@ let Passwordregex = /^[A-Z0-9a-z]{1}[A-Za-z0-9.@#$&_]{7,14}$/
 let titleRegex = /^[A-Za-z1-9]{1}[A-Za-z0-9 ,]{1,}$/
 let PinCodeRegex = /^[1-9]{1}[0-9]{5}$/
 let ISBNRegex = /^[1-9]{1}[0-9-]{1,}$/
+let dateRegex= /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 
 
 const Bookcreate = async function (req, res) {
@@ -76,6 +77,9 @@ const Bookcreate = async function (req, res) {
         if (!body.releasedAt) {
             return res.status(400).send({ Status: false, message: " releasedAt is required,please use this format YYYY-MM-DD " })
         }
+        if(!dateRegex.test(body.releasedAt)){
+            return res.status(400).send({ Status: false, message: " releasedAt is not in valid format, please use this format YYYY-MM-DD " })
+        }
 
         let Checkuniquedata = await BookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }] })
         if (Checkuniquedata) {
@@ -87,7 +91,7 @@ const Bookcreate = async function (req, res) {
             }
         }
 
-        console.log("body:    ",body)
+        console.log("body:    ", body)
 
         let CreateBook = await BookModel.create(body)
 
@@ -95,14 +99,14 @@ const Bookcreate = async function (req, res) {
 
         if (CheckDelete) {
             if (CheckDelete.isDeleted === true) {
-                let updatedate = await BookModel.findOneAndUpdate(body, { releasedAt: new Date(), deletedAt: new Date() })
+                let updatedate = await BookModel.findOneAndUpdate(body, { releasedAt: body.releasedAt, deletedAt: new Date() })
                 return res.status(200).send({ Status: true, message: " Sorry  you can not create a book " })
             }
         }
 
         // this line is being use for giving a release date releasedAt:
 
-        let BookReleasedate = await BookModel.findOneAndUpdate(body,{$set:{releasedAt: date}} , {new:true})
+        let BookReleasedate = await BookModel.findOneAndUpdate(body, { $set: { releasedAt: body.releasedAt } }, { new: true })
 
         return res.status(201).send({ Status: true, message: 'Success', data: BookReleasedate })
 
@@ -116,12 +120,11 @@ const Bookcreate = async function (req, res) {
 
 // get Api
 
-const GetBook = async function(req,res){
-    try{
-        // Returns all books in the collection that aren't deleted. Return only book _id, title, excerpt, userId, category, releasedAt, reviews field. Response example
+const GetBook = async function (req, res) {
+    try {
 
-        let Checkbook= await bookModel.find({isDeleted:false}).select({_id:1,title:1,excerpt:1,userId:1, category:1, releasedAt:1, reviews:1 }).sort({title:1})
-        
+        let Checkbook = await bookModel.find({ isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+
         return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
 
     }
@@ -130,6 +133,43 @@ const GetBook = async function(req,res){
     }
 }
 
+// get api with params
+
+const resultBook = async function (req, res) {
+    try {
+
+        let FindBook = await BookModel.findById({ _id: req.params.bookId })
+
+        let reviewsData = []
+
+        let _id= FindBook._id;
+        let title = FindBook.title
+        let excerpt= FindBook.excerpt
+        let userId =FindBook.userId
+        let category=FindBook.category
+        let subcategory= FindBook.subcategory
+        let deleted= FindBook.isDeleted
+        let reviews=FindBook.reviews
+        let releasedAt= FindBook.releasedAt
+        let createdAt=FindBook.createdAt
+        let updatedAt = FindBook.updatedAt
+        let deletedAt=FindBook.deletedAt
+        deletedAt=""
+
+        let data = {}
+        data ={_id,title,excerpt,userId,category,subcategory,deleted,reviews,deletedAt,releasedAt,createdAt,updatedAt,reviewsData}
+
+        console.log("okay:   ", data)
+
+        return res.status(200).send({ Status: true, message: 'Success', data: data })
+
+    } catch (err) {
+        return res.status(500).send({ Status: false, message: err.message })
+    }
+
+}
+
 
 module.exports.Bookcreate = Bookcreate
-module.exports.GetBook=GetBook
+module.exports.GetBook = GetBook
+module.exports.resultBook=resultBook
