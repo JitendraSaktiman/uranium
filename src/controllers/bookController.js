@@ -16,7 +16,7 @@ let nameRegex = /^[A-Za-z]{1}[A-Za-z ]{1,}$/
 let ReviewRegex = /^[0-9]$/
 let EmailRegex = /^[A-Za-z]{1}[A-Za-z0-9._]{1,}@[A-Za-z]{2,15}[.]{1}[a-z.]{2,5}$/
 let Passwordregex = /^[A-Z0-9a-z]{1}[A-Za-z0-9.@#$&_]{7,14}$/
-let titleRegex = /^[A-Za-z1-9]{1}[A-Za-z0-9 ,]{5,}$/
+let titleRegex = /^[A-Za-z1-9]{1}[A-Za-z0-9 ,]{1,}$/
 let PinCodeRegex = /^[1-9]{1}[0-9]{5}$/
 let ISBNRegex = /^[1-9]{1}[0-9-]{1,}$/
 

@@ -85,7 +85,7 @@ const Mid2 = async function (req, res, next) {
             }
         }
         else{
-            return res.status(400).send({ Status: false, message: "Please send the data in combination form from query" })
+            return res.status(400).send({ Status: false, message: "Data are not in valid combination form from query" })
         }
 
 
