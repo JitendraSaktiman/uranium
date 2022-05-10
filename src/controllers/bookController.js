@@ -24,6 +24,7 @@ let dateRegex= /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 
 
 const Bookcreate = async function (req, res) {
+
     try {
         let body = req.body
 
@@ -81,6 +82,7 @@ const Bookcreate = async function (req, res) {
         if(!dateRegex.test(body.releasedAt)){
             return res.status(400).send({ Status: false, message: " releasedAt is not in valid format, please use this format YYYY-MM-DD " })
         }
+        
 
         let Checkuniquedata = await BookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }] })
         if (Checkuniquedata) {
@@ -124,7 +126,9 @@ const Bookcreate = async function (req, res) {
 const GetBook = async function (req, res) {
     try {
 
-        let Checkbook = await bookModel.find({ isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+        let query = req.query
+
+        let Checkbook = await bookModel.find({$and:[query,{isDeleted: false }]}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
         if(Checkbook){
             return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
         }
