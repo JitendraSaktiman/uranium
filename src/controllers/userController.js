@@ -2,6 +2,8 @@ const usermodel = require('../models/userModel')
 
 const jwt = require('jsonwebtoken')
 
+
+
 const Createuser = async function (req, res) {
 
     try {
@@ -44,7 +46,7 @@ const Createuser = async function (req, res) {
 
         // Email and phone unique condition
 
-        let Checkuniquedata = await usermodel.findOne({ $or: [{ emai: body.email }, { phone: body.phone }] })
+        let Checkuniquedata = await usermodel.findOne({ $or: [{ email: body.email }, { phone: body.phone }] })
         if (Checkuniquedata) {
             if (Checkuniquedata.phone == body.phone) {
                 return res.status(400).send({ Status: false, message: " This phone has been used already" })
@@ -128,18 +130,26 @@ const login = async function (req, res) {
 
         // checking User Detail
 
-        let CheckUser = await usermodel.findOne({ email: body.email, password: body.password });                
+        let CheckUser = await usermodel.findOne({ email: body.email, password: body.password });
 
         if (!CheckUser) {
             return res.status(400).send({ Status: false, message: "username or the password is not correct" });
         }
 
+        // let user_token = jwt.sign({
+
+        //     exp: Math.floor(Date.now() / 1000) + (60 * 60),     //Signing a token with 1 hour of expiration
+        //     UserId: CheckUser._id
+
+        // }, 'FunctionUp Group55');
+
         let user_token = jwt.sign({
 
-            exp: Math.floor(Date.now() / 1000) + (60 * 60),     //Signing a token with 1 hour of expiration
             UserId: CheckUser._id
-        
-        }, 'FunctionUp Group55');
+
+        }, 'FunctionUp Group55', { expiresIn: '10minutes' });
+
+
 
         res.setHeader("x-api-key", user_token);
         return res.status(201).send({ status: true, data: user_token });
