@@ -30,7 +30,7 @@ const Mid1 = async function (req, res, next) {
             return res.status(400).send({ Status: false, message: " No user found from given userId" })
         }
 
-        // try {
+         try {
         let Decode_token = jwt.verify(token, "FunctionUp Group55")
         if (Decode_token) {
             if (Decode_token.UserId != CheckUser._id) {
@@ -38,10 +38,10 @@ const Mid1 = async function (req, res, next) {
             }
             return next()
         }
-        // }
-        // catch (err) {
-        //     return res.status(404).send({ Status: false, message: "token is not valid" })
-        // }
+        }
+        catch (err) {
+            return res.status(400).send({ Status: false, message: "token is not valid" })
+        }
 
     }
     catch (err) {
@@ -68,7 +68,7 @@ const Mid2 = async function (req, res, next) {
 
             let CheckBooks = await BookModel.findOne({ $or: [{ userId: query.userId, category: query.category }, { userId: query.userId, subcategory: query.subcategory }, { subcategory: query.subcategory, category: query.category }] })
 
-            if(!CheckBooks){
+            if (!CheckBooks) {
                 return res.status(400).send({ Status: false, message: "Book does not exist" });
             }
 
@@ -79,8 +79,6 @@ const Mid2 = async function (req, res, next) {
 
             let Decode_token = jwt.verify(token, "FunctionUp Group55")
 
-            console.log("decode token    ", Decode_token)
-
             if (Decode_token) {
                 if (Decode_token.UserId != CheckBooks.userId) {
                     return res.status(400).send({ Status: false, message: "This is not valid token for this User/Books" })
@@ -88,11 +86,9 @@ const Mid2 = async function (req, res, next) {
                 return next()
             }
         }
-        else{
+        else {
             return res.status(400).send({ Status: false, message: "Data are not in valid combination form from query" })
         }
-
-
     }
     catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
