@@ -19,7 +19,7 @@ let EmailRegex = /^[A-Za-z]{1}[A-Za-z0-9._]{1,}@[A-Za-z]{2,15}[.]{1}[a-z.]{2,5}$
 let Passwordregex = /^[A-Z0-9a-z]{1}[A-Za-z0-9.@#$&_]{7,14}$/
 let titleRegex = /^[A-Za-z1-9]{1}[A-Za-z0-9 ,]{1,}$/
 let PinCodeRegex = /^[1-9]{1}[0-9]{5}$/
-let ISBNRegex = /^[1-9]{1}[0-9-]{1,}$/
+let ISBNRegex = /^[1-9]{1}[0-9-]{1,13}$/
 let dateRegex= /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 
 
@@ -129,12 +129,12 @@ const GetBook = async function (req, res) {
         let query = req.query
 
         let Checkbook = await bookModel.find({$and:[query,{isDeleted: false }]}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
-        if(Checkbook){
+        if(Checkbook.length>0){
             return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
         }
-        else{
-            return res.status(400).send({ Status: false, message: " No data found due to is Deleted true" })
-        }
+        
+        return res.status(400).send({ Status: false, message: " No data found due to is Deleted true" })
+        
 
     }
     catch (err) {
