@@ -2,6 +2,7 @@ const BookModel = require("../models/bookModel")
 const userModel = require("../models/userModel")
 var moment = require('moment'); // require
 const bookModel = require("../models/bookModel");
+const reviewModel = require ("../models/reviewModel")
 
 const formatYmd = date => date.toISOString().slice(0, 10);
 
@@ -140,7 +141,7 @@ const resultBook = async function (req, res) {
 
         let FindBook = await BookModel.findById({ _id: req.params.bookId })
 
-        let reviewsData = []
+        let reviewsData = await reviewModel.find({bookId:req.params.bookId}) 
 
         let _id= FindBook._id;
         let title = FindBook.title
