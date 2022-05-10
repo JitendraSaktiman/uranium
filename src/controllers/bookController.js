@@ -125,8 +125,12 @@ const GetBook = async function (req, res) {
     try {
 
         let Checkbook = await bookModel.find({ isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
-
-        return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
+        if(Checkbook){
+            return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
+        }
+        else{
+            return res.status(400).send({ Status: false, message: " No data found due to is Deleted true" })
+        }
 
     }
     catch (err) {
