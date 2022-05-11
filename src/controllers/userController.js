@@ -1,9 +1,9 @@
 const usermodel = require('../models/userModel')
 const validator = require('../Middleware/validator');
-
 const jwt = require('jsonwebtoken')
 
 
+//---------------------CREATE USER ----------------------------------***
 
 const Createuser = async function (req, res) {
 
@@ -95,8 +95,7 @@ const Createuser = async function (req, res) {
 
 }
 
-
-
+//-------------------USER LOGIN----------------------------***
 
 const login = async function (req, res) {
 

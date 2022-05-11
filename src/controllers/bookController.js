@@ -11,7 +11,7 @@ let date = formatYmd(new Date());
 
 
 
-// all regex
+// all regex validtaion
 
 let nameRegex = /^[A-Za-z]{1}[A-Za-z ]{1,}$/
 let ReviewRegex = /^[0-9]$/
@@ -21,12 +21,14 @@ let titleRegex = /^[A-Za-z1-9]{1}[A-Za-z0-9 ,-]{1,}$/
 let ISBNRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$$/
 let dateRegex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 
+//----------------------------------CREATE BOOK-----------------------------***
 
 const Bookcreate = async function (req, res) {
 
     try {
+        //get data from body
         let body = req.body
-
+         //if req.body is empty
         if (Object.keys(body).length === 0) {
             return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
         }
@@ -35,13 +37,15 @@ const Bookcreate = async function (req, res) {
         if (!body.title) {
             return res.status(400).send({ Status: false, message: " Title is required" })
         }
+        // using  regex validation 
         if (!titleRegex.test(body.title)) {
             return res.status(400).send({ Status: false, message: " Title is not valid format" })
         }
-
+         // using validation
         if (!body.excerpt) {
             return res.status(400).send({ Status: false, message: " excerpt is required" })
         }
+        // using  regex validation 
         if (!titleRegex.test(body.excerpt)) {
             return res.status(400).send({ Status: false, message: " excerpt is not valid format" })
         }
@@ -99,6 +103,7 @@ const Bookcreate = async function (req, res) {
 
         let CheckDelete = await BookModel.findOne(body)
 
+        
         if (CheckDelete) {
             if (CheckDelete.isDeleted === true) {
                 let updatedate = await BookModel.findOneAndUpdate(body, { releasedAt: body.releasedAt, deletedAt: new Date() })
@@ -120,7 +125,7 @@ const Bookcreate = async function (req, res) {
 }
 
 
-// get Api
+//------------------------------GET BOOK -------------------------------------------***
 
 const GetBook = async function (req, res) {
     try {
@@ -141,7 +146,7 @@ const GetBook = async function (req, res) {
     }
 }
 
-// get api with params
+//------------------------------------- GET BOOK BY PARAM----------------------------***
 
 const resultBook = async function (req, res) {
     try {
@@ -183,7 +188,7 @@ const resultBook = async function (req, res) {
 
 }
 
-// Put APi 
+//--------------------------------------UPDATE BOOK BY PARAMS(BOOKID)---------------------------*** 
 
 const UpdateBook = async function (req, res) {
 
@@ -234,7 +239,7 @@ const UpdateBook = async function (req, res) {
     }
 }
 
-// DeleteBook API
+//----------------------------------------- DeleteBook BY PARAMS----------------------------***
 
 const DeleteBook = async function (req, res) {
     try {
@@ -254,7 +259,7 @@ const DeleteBook = async function (req, res) {
     }
 }
 
-
+//-----------------------------EXPORT ALL API FUNCTION----------------------------------***
 
 module.exports.Bookcreate = Bookcreate
 module.exports.GetBook = GetBook

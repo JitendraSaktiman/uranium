@@ -7,11 +7,13 @@ const ReviewController= require("../controllers/reviewController")
 const Middleware = require("../Middleware/Authentication")
 
 
+//------------------------------USER API -----------------------------------***
 
 router.post("/register",userController.Createuser)
 
-
 router.post('/login', userController.login)
+
+// ---------------------------BOOK API -------------------------------------***
 
 router.post('/books',Middleware.Mid1,BookController.Bookcreate)
 
@@ -23,6 +25,11 @@ router.put("/books/:bookId",Middleware.Mid3,BookController.UpdateBook)
 
 router.delete("/books/:bookId",Middleware.Mid3,BookController.DeleteBook)
 
+//-----------------------------REVIEW API ----------------------------------***
+
 router.post('/books/:bookId/review',ReviewController.CreateReview)
+
+
+
 
 module.exports = router;

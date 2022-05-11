@@ -8,10 +8,13 @@ let nameRegex = /^[A-Za-z]{1}[A-Za-z ]{1,}$/
 
 let ratingRegext = /^[1-5]{1}$/
 
+//-----------------------CREATE REVIEW ---------------------------------------***
 
 const CreateReview = async function (req, res) {
 
     try {
+
+        // GETING DATA FROM REQ.BODY
 
         let data = req.params.bookId
         let body = req.body
@@ -41,6 +44,7 @@ const CreateReview = async function (req, res) {
         if(!body.rating){
             return res.status(400).send({ Status: false, message: "Please enter the rating" })
         }
+        //REGEX VALIDATIONS 
         if(!ratingRegext.test(body.rating)){
             return res.status(400).send({ Status: false, message: "Please enter the valid rating min 1, max 5 " })
         }
@@ -52,12 +56,16 @@ const CreateReview = async function (req, res) {
         let reviewedAt= new Date()
         let review= body.review
 
+        //DESTRUCTURE
         result={bookId,reviewedBy,rating,reviewedAt,review}
 
+        //CREATE REVIEW DOCUMENT
         let ReviewCreate= await reviewModel.create(result)
 
+        //SELECT PARTICULAR KEY 
         let ShowReview= await reviewModel.findOne(result).select({_id:1,bookId:1,reviewedBy:1,reviewedAt:1,rating:1,review:1})
 
+        //FIND ID AND UPDATE REVIEW
         let UpdateCountReview =await BookModel.findByIdAndUpdate({_id:data},{$inc:{reviews:1}})
 
         return res.status(201).send({ Status: true, message: 'Success', data: ShowReview })

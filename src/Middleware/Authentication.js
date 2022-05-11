@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 
 
 
-
+//------------------------AUTHENTICATION----------------------------***
 
 const Mid1 = async function (req, res, next) {
     try {
@@ -93,6 +93,8 @@ const Mid2 = async function (req, res, next) {
         return res.status(500).send({ Status: false, message: err.message })
     }
 }
+
+// AUTHORIZATION
 
 const Mid3 = async function (req, res, next) {
     try {
