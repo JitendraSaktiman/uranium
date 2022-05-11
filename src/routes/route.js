@@ -20,4 +20,6 @@ router.get('/books/:bookId',Middleware.Mid3,BookController.resultBook)
 
 router.put("/books/:bookId",Middleware.Mid3,BookController.UpdateBook)
 
+router.delete("/books/:bookId",Middleware.Mid3,BookController.DeleteBook)
+
 module.exports = router;

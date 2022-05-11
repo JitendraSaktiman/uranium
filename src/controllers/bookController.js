@@ -15,11 +15,10 @@ let date = formatYmd(new Date());
 
 let nameRegex = /^[A-Za-z]{1}[A-Za-z ]{1,}$/
 let ReviewRegex = /^[0-9]$/
-let EmailRegex = /^[A-Za-z]{1}[A-Za-z0-9._]{1,}@[A-Za-z]{2,15}[.]{1}[a-z.]{2,5}$/
-let Passwordregex = /^[A-Z0-9a-z]{1}[A-Za-z0-9.@#$&_]{7,14}$/
-let titleRegex = /^[A-Za-z1-9]{1}[A-Za-z0-9 ,]{1,}$/
-let PinCodeRegex = /^[1-9]{1}[0-9]{5}$/
-let ISBNRegex = /^[1-9]{1}[0-9-]{1,13}$/
+
+let titleRegex = /^[A-Za-z1-9]{1}[A-Za-z0-9 ,-]{1,}$/
+
+let ISBNRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$$/
 let dateRegex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 
 
@@ -193,7 +192,7 @@ const UpdateBook = async function (req, res) {
 
         if (body.title || body.excerpt || body.releasedAt || body.ISBN) {
 
-            let CheckData = await bookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }]} )
+            let CheckData = await bookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }] })
 
 
             console.log("help:      ", CheckData)
@@ -224,8 +223,25 @@ const UpdateBook = async function (req, res) {
             return res.status(400).send({ Status: false, message: " Sorry you are not allowed to update by this key" })
         }
 
+    } catch (err) {
+        return res.status(500).send({ Status: false, message: err.message })
+    }
+}
 
+// DeleteBook API
 
+const DeleteBook = async function (req, res) {
+    try {
+
+        let data= req.params
+
+        let CheckDeleted = await BookModel.findOneAndUpdate({$and:[{ _id: data.bookId },{ isDeleted: false }]},{$set:{isDeleted:true,deletedAt: new Date}},{ new: true })
+
+        if(!CheckDeleted){
+            return res.status(404).send({ Status: false, message: " This book is deleted book" })
+        }
+
+        return res.status(200).send({ Status: true, message: 'Success', data: CheckDeleted })
 
     } catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
@@ -233,7 +249,9 @@ const UpdateBook = async function (req, res) {
 }
 
 
+
 module.exports.Bookcreate = Bookcreate
 module.exports.GetBook = GetBook
 module.exports.resultBook = resultBook
 module.exports.UpdateBook = UpdateBook
+module.exports.DeleteBook = DeleteBook
