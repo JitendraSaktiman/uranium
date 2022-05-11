@@ -76,15 +76,18 @@ const Mid2 = async function (req, res, next) {
             // if (!CheckUser) {
             //     return res.status(400).send({ Status: false, message: "user id not found" });
             // }
-
-            let Decode_token = jwt.verify(token, "FunctionUp Group55")
-
-            if (Decode_token) {
-                if (Decode_token.UserId != CheckBooks.userId) {
-                    return res.status(400).send({ Status: false, message: "This is not valid token for this User/Books" })
+            try{
+                let Decode_token = jwt.verify(token, "FunctionUp Group55")
+                if (Decode_token) {
+                    if (Decode_token.UserId != CheckBooks.userId) {
+                        return res.status(400).send({ Status: false, message: "This is not valid token for this User/Books" })
+                    }
+                    return next()
                 }
-                return next()
+            }        catch (err) {
+                return res.status(400).send({ Status: false, message: "token is not valid" })
             }
+
         }
         else {
             return res.status(400).send({ Status: false, message: "Data are not in valid combination form from query" })
