@@ -2,7 +2,7 @@ const BookModel = require("../models/bookModel")
 const userModel = require("../models/userModel")
 var moment = require('moment'); // require
 const bookModel = require("../models/bookModel");
-const reviewModel = require ("../models/reviewModel")
+const reviewModel = require("../models/reviewModel")
 
 const formatYmd = date => date.toISOString().slice(0, 10);
 
@@ -20,7 +20,7 @@ let Passwordregex = /^[A-Z0-9a-z]{1}[A-Za-z0-9.@#$&_]{7,14}$/
 let titleRegex = /^[A-Za-z1-9]{1}[A-Za-z0-9 ,]{1,}$/
 let PinCodeRegex = /^[1-9]{1}[0-9]{5}$/
 let ISBNRegex = /^[1-9]{1}[0-9-]{1,13}$/
-let dateRegex= /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
+let dateRegex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 
 
 const Bookcreate = async function (req, res) {
@@ -79,10 +79,10 @@ const Bookcreate = async function (req, res) {
         if (!body.releasedAt) {
             return res.status(400).send({ Status: false, message: " releasedAt is required,please use this format YYYY-MM-DD " })
         }
-        if(!dateRegex.test(body.releasedAt)){
+        if (!dateRegex.test(body.releasedAt)) {
             return res.status(400).send({ Status: false, message: " releasedAt is not in valid format, please use this format YYYY-MM-DD " })
         }
-        
+
 
         let Checkuniquedata = await BookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }] })
         if (Checkuniquedata) {
@@ -128,13 +128,13 @@ const GetBook = async function (req, res) {
 
         let query = req.query
 
-        let Checkbook = await bookModel.find({$and:[query,{isDeleted: false }]}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
-        if(Checkbook.length>0){
+        let Checkbook = await bookModel.find({ $and: [query, { isDeleted: false }] }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+        if (Checkbook.length > 0) {
             return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
         }
-        
+
         return res.status(400).send({ Status: false, message: " No data found due to is Deleted true" })
-        
+
 
     }
     catch (err) {
@@ -149,24 +149,24 @@ const resultBook = async function (req, res) {
 
         let FindBook = await BookModel.findById({ _id: req.params.bookId })
 
-        let reviewsData = await reviewModel.find({bookId:req.params.bookId}) 
+        let reviewsData = await reviewModel.find({ bookId: req.params.bookId })
 
-        let _id= FindBook._id;
+        let _id = FindBook._id;
         let title = FindBook.title
-        let excerpt= FindBook.excerpt
-        let userId =FindBook.userId
-        let category=FindBook.category
-        let subcategory= FindBook.subcategory
-        let deleted= FindBook.isDeleted
-        let reviews=FindBook.reviews
-        let releasedAt= FindBook.releasedAt
-        let createdAt=FindBook.createdAt
+        let excerpt = FindBook.excerpt
+        let userId = FindBook.userId
+        let category = FindBook.category
+        let subcategory = FindBook.subcategory
+        let deleted = FindBook.isDeleted
+        let reviews = FindBook.reviews
+        let releasedAt = FindBook.releasedAt
+        let createdAt = FindBook.createdAt
         let updatedAt = FindBook.updatedAt
-        let deletedAt=FindBook.deletedAt
-        deletedAt=""
+        let deletedAt = FindBook.deletedAt
+        deletedAt = ""
 
         let data = {}
-        data ={_id,title,excerpt,userId,category,subcategory,deleted,reviews,deletedAt,releasedAt,createdAt,updatedAt,reviewsData}
+        data = { _id, title, excerpt, userId, category, subcategory, deleted, reviews, deletedAt, releasedAt, createdAt, updatedAt, reviewsData }
 
         console.log("okay:   ", data)
 
@@ -178,7 +178,62 @@ const resultBook = async function (req, res) {
 
 }
 
+// Put APi 
+
+const UpdateBook = async function (req, res) {
+
+    try {
+
+        let body = req.body
+        let data = req.params
+
+        if (Object.keys(body).length === 0) {
+            return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
+        }
+
+        if (body.title || body.excerpt || body.releasedAt || body.ISBN) {
+
+            let CheckData = await bookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }]} )
+
+
+            console.log("help:      ", CheckData)
+
+            if (CheckData) {
+                if (CheckData.isDeleted === true) {
+                    return res.status(404).send({ Status: false, message: " This book is deleted book" })
+                }
+                if (CheckData.title === body.title) {
+                    return res.status(400).send({ Status: false, message: " This title has been used already" })
+                }
+                if (CheckData.ISBN === body.ISBN) {
+                    return res.status(400).send({ Status: false, message: " This ISBN has been used already" })
+                }
+            }
+
+            let CheckDeleted = await BookModel.findOneAndUpdate({ $and: [{ _id: data.bookId }, { isDeleted: false }] }, { $set: { title: body.title, excerpt: body.excerpt, ISBN: body.ISBN, releasedAt: body.releasedAt } }, { new: true })
+
+            if (CheckDeleted) {
+                return res.status(200).send({ Status: true, message: 'Success', data: CheckDeleted })
+            }
+            else {
+                return res.status(404).send({ Status: false, message: " This book is deleted book 2" })
+            }
+
+        }
+        else {
+            return res.status(400).send({ Status: false, message: " Sorry you are not allowed to update by this key" })
+        }
+
+
+
+
+    } catch (err) {
+        return res.status(500).send({ Status: false, message: err.message })
+    }
+}
+
 
 module.exports.Bookcreate = Bookcreate
 module.exports.GetBook = GetBook
-module.exports.resultBook=resultBook
+module.exports.resultBook = resultBook
+module.exports.UpdateBook = UpdateBook

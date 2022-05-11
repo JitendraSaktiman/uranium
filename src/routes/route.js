@@ -18,5 +18,6 @@ router.get('/books',Middleware.Mid2,BookController.GetBook)
 
 router.get('/books/:bookId',Middleware.Mid3,BookController.resultBook)
 
+router.put("/books/:bookId",Middleware.Mid3,BookController.UpdateBook)
 
 module.exports = router;

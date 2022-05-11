@@ -72,10 +72,6 @@ const Mid2 = async function (req, res, next) {
                 return res.status(400).send({ Status: false, message: "Book does not exist" });
             }
 
-            // let CheckUser = await userModel.findOne({ _id: CheckBooks.userId });
-            // if (!CheckUser) {
-            //     return res.status(400).send({ Status: false, message: "user id not found" });
-            // }
             try{
                 let Decode_token = jwt.verify(token, "FunctionUp Group55")
                 if (Decode_token) {
