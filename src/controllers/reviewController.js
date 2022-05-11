@@ -19,8 +19,6 @@ const CreateReview = async function (req, res) {
         let data = req.params.bookId
         let body = req.body
 
-        console.log(body)
-
         if (!data) {
             return res.status(400).send({ Status: false, message: "No book id found" })
         }
@@ -34,12 +32,12 @@ const CreateReview = async function (req, res) {
             return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
         }
 
-        if(!body.reviewedBy){
-            return res.status(400).send({ Status: false, message: "Please enter the reviedwedBy" })
+        if(body.reviewedBy){
+            if(!nameRegex.test(body.reviewedBy)){
+                return res.status(400).send({ Status: false, message: "Please enter the valid reviedwedBy name" })
+            }
         }
-        if(!nameRegex.test(body.reviewedBy)){
-            return res.status(400).send({ Status: false, message: "Please enter the valid reviedwedBy name" })
-        }
+
 
         if(!body.rating){
             return res.status(400).send({ Status: false, message: "Please enter the rating" })
@@ -61,13 +59,13 @@ const CreateReview = async function (req, res) {
 
         //CREATE REVIEW DOCUMENT
         let ReviewCreate= await reviewModel.create(result)
-
-        //SELECT PARTICULAR KEY 
-        let ShowReview= await reviewModel.findOne(result).select({_id:1,bookId:1,reviewedBy:1,reviewedAt:1,rating:1,review:1})
+        
+        //SELECT PARTICULAR KEY
+        let ShowReview= await reviewModel.findOne({_id:ReviewCreate._id}).select({_id:1,bookId:1,reviewedBy:1,reviewedAt:1,rating:1,review:1})
 
         //FIND ID AND UPDATE REVIEW
-        let UpdateCountReview =await BookModel.findByIdAndUpdate({_id:data},{$inc:{reviews:1}})
 
+        let UpdateCountReview =await BookModel.findByIdAndUpdate({_id:data},{$inc:{reviews:1}})
         return res.status(201).send({ Status: true, message: 'Success', data: ShowReview })
 
     } catch (err) {
