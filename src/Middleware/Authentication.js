@@ -40,7 +40,7 @@ const Mid1 = async function (req, res, next) {
             }
         }
         catch (err) {
-            return res.status(400).send({ Status: false, message: "token is not valid" })
+            return res.status(400).send({ Status: false, message: "token is not valid/ token expire" })
         }
 
     }
@@ -72,7 +72,7 @@ const Mid2 = async function (req, res, next) {
                 return res.status(400).send({ Status: false, message: "Book does not exist" });
             }
 
-            try{
+            try {
                 let Decode_token = jwt.verify(token, "FunctionUp Group55")
                 if (Decode_token) {
                     if (Decode_token.UserId != CheckBooks.userId) {
@@ -80,8 +80,8 @@ const Mid2 = async function (req, res, next) {
                     }
                     return next()
                 }
-            }        catch (err) {
-                return res.status(400).send({ Status: false, message: "token is not valid" })
+            } catch (err) {
+                return res.status(400).send({ Status: false, message: "token is not valid/ token expire" })
             }
 
         }

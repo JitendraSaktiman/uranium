@@ -148,6 +148,8 @@ const resultBook = async function (req, res) {
 
         let FindBook = await BookModel.findById({ _id: req.params.bookId })
 
+        console.log("okay:   ", FindBook)
+
         let reviewsData = await reviewModel.find({ bookId: req.params.bookId })
 
         let _id = FindBook._id;
@@ -162,12 +164,16 @@ const resultBook = async function (req, res) {
         let createdAt = FindBook.createdAt
         let updatedAt = FindBook.updatedAt
         let deletedAt = FindBook.deletedAt
-        deletedAt = ""
+        
 
+        if(FindBook.isDeleted=== true){
+            let resultant ={}
+            resultant = { _id, title, excerpt, userId, category, subcategory, deleted, reviews, deletedAt: FindBook.deletedAt, releasedAt, createdAt, updatedAt, reviewsData }
+            return res.status(200).send({ Status: true, message: 'Success', data: resultant })
+        }
+        
         let data = {}
-        data = { _id, title, excerpt, userId, category, subcategory, deleted, reviews, deletedAt, releasedAt, createdAt, updatedAt, reviewsData }
-
-        console.log("okay:   ", data)
+        data = { _id, title, excerpt, userId, category, subcategory, deleted, reviews, deletedAt:"", releasedAt, createdAt, updatedAt, reviewsData }
 
         return res.status(200).send({ Status: true, message: 'Success', data: data })
 
