@@ -151,7 +151,7 @@ const resultBook = async function (req, res) {
 
         let FindBook = await BookModel.findById({ _id: req.params.bookId })
 
-        let reviewsData = await reviewModel.find({ bookId: req.params.bookId }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
+        let reviewsData = await reviewModel.find({ bookId: req.params.bookId ,isDeleted:false }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
 
         let _id = FindBook._id;
         let title = FindBook.title
