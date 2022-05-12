@@ -63,12 +63,14 @@ const CreateReview = async function (req, res) {
         //CREATE REVIEW DOCUMENT
         let ReviewCreate = await reviewModel.create(result)
 
-        //SELECT PARTICULAR KEY
-        let ShowReview = await reviewModel.findOne({ _id: ReviewCreate._id }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
-
         //FIND ID AND UPDATE REVIEW
 
         let UpdateCountReview = await BookModel.findByIdAndUpdate({ _id: data }, { $inc: { reviews: 1 } })
+
+        //SELECT PARTICULAR KEY
+        let ShowReview = await reviewModel.findOne({ _id: ReviewCreate._id }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 }).populate("bookId")
+
+
 
         return res.status(201).send({ Status: true, message: 'Success', data: ShowReview })
 
@@ -127,7 +129,7 @@ const ReviewUpdate = async function (req, res) {
         //review, rating, reviewer's name
 
 
-        let UpdateReview= await reviewModel.findByIdAndUpdate({_id:ReviewId},{review:body.review, rating:body.rating, reviewedBy:body.reviewedBy},{new:true}).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
+        let UpdateReview= await reviewModel.findByIdAndUpdate({_id:ReviewId},{review:body.review, rating:body.rating, reviewedBy:body.reviewedBy},{new:true}).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 }).populate("bookId")
 
         return res.status(200).send({ Status: true, message: 'Success', data: UpdateReview })
 

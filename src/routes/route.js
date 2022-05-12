@@ -27,11 +27,11 @@ router.delete("/books/:bookId",Middleware.Mid3,BookController.DeleteBook)
 
 //-----------------------------REVIEW API ----------------------------------***
 
-router.post('/books/:bookId/review',ReviewController.CreateReview)
+router.post('/books/:bookId/review',Middleware.Mid3,ReviewController.CreateReview)
 
-router.put('/books/:bookId/review/:reviewId',ReviewController.ReviewUpdate)
+router.put('/books/:bookId/review/:reviewId',Middleware.Mid3,ReviewController.ReviewUpdate)
 
-router.delete('/books/:bookId/review/:reviewId',ReviewController.ReviewDelete)
+router.delete('/books/:bookId/review/:reviewId',Middleware.Mid3,ReviewController.ReviewDelete)
 
 
 module.exports = router;
