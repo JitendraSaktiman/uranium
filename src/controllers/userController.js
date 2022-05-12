@@ -147,7 +147,7 @@ const login = async function (req, res) {
 
             UserId: CheckUser._id
 
-        }, 'FunctionUp Group55', { expiresIn: '60s' });
+        }, 'FunctionUp Group55', { expiresIn: '24h' });
 
 
 

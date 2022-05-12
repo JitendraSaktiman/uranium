@@ -32,6 +32,10 @@ const Bookcreate = async function (req, res) {
         if (Object.keys(body).length === 0) {
             return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
         }
+
+        // if(body.isDeleted === true){
+        //     return res.status(200).send({ Status: true, message: " Sorry  you are not allowed " })
+        // }
         // title validation
 
         if (!body.title) {
@@ -97,8 +101,6 @@ const Bookcreate = async function (req, res) {
             }
         }
 
-        console.log("body:    ", body)
-
         let CreateBook = await BookModel.create(body)
 
         let CheckDelete = await BookModel.findOne(body)
@@ -111,11 +113,7 @@ const Bookcreate = async function (req, res) {
             }
         }
 
-        // this line is being use for giving a release date releasedAt:
-
-        let BookReleasedate = await BookModel.findOneAndUpdate(body, { $set: { releasedAt: body.releasedAt } }, { new: true })
-
-        return res.status(201).send({ Status: true, message: 'Success', data: BookReleasedate })
+        return res.status(201).send({ Status: true, message: 'Success', data: CreateBook })
 
 
     }
@@ -153,9 +151,7 @@ const resultBook = async function (req, res) {
 
         let FindBook = await BookModel.findById({ _id: req.params.bookId })
 
-        console.log("okay:   ", FindBook)
-
-        let reviewsData = await reviewModel.find({ bookId: req.params.bookId })
+        let reviewsData = await reviewModel.find({ bookId: req.params.bookId }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
 
         let _id = FindBook._id;
         let title = FindBook.title
