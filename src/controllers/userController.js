@@ -136,13 +136,6 @@ const login = async function (req, res) {
             return res.status(400).send({ Status: false, message: "username or the password is not correct" });
         }
 
-        // let user_token = jwt.sign({
-
-        //     exp: Math.floor(Date.now() / 1000) + (60 * 60),     //Signing a token with 1 hour of expiration
-        //     UserId: CheckUser._id
-
-        // }, 'FunctionUp Group55');
-
         let user_token = jwt.sign({
 
             UserId: CheckUser._id
