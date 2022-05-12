@@ -135,7 +135,7 @@ const GetBook = async function (req, res) {
             return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
         }
 
-        return res.status(400).send({ Status: false, message: " No data found due to is Deleted true" })
+        return res.status(400).send({ Status: false, message: " No data found  / can be is Deleted true" })
 
 
     }
@@ -200,9 +200,6 @@ const UpdateBook = async function (req, res) {
         if (body.title || body.excerpt || body.releasedAt || body.ISBN) {
 
             let CheckData = await bookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }] })
-
-
-            console.log("help:      ", CheckData)
 
             if (CheckData) {
                 if (CheckData.isDeleted === true) {
