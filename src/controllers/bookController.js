@@ -185,23 +185,12 @@ const resultBook = async function (req, res) {
 
         let reviewsData = await reviewModel.find({ bookId: req.params.bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
 
-        let _id = FindBook._id;
-        let title = FindBook.title
-        let excerpt = FindBook.excerpt
-        let userId = FindBook.userId
-        let category = FindBook.category
-        let subcategory = FindBook.subcategory
-        let deleted = FindBook.isDeleted
-        let reviews = FindBook.reviews
-        let releasedAt = FindBook.releasedAt
-        let createdAt = FindBook.createdAt
-        let updatedAt = FindBook.updatedAt
-        let deletedAt = FindBook.deletedAt
-
+    
+        const { _id, title, excerpt, userId, category, subcategory, deleted, reviews, deletedAt, releasedAt, createdAt, updatedAt } = FindBook
 
         if (FindBook.isDeleted === true) {
             let resultant = {}
-            resultant = { _id, title, excerpt, userId, category, subcategory, deleted, reviews, deletedAt: FindBook.deletedAt, releasedAt, createdAt, updatedAt, reviewsData }
+            resultant = {_id, title, excerpt, userId, category, subcategory, deleted, reviews, deletedAt, releasedAt, createdAt, updatedAt, reviewsData , reviewsData }
             return res.status(200).send({ Status: true, message: 'Success', data: resultant })
         }
 

@@ -59,17 +59,22 @@ const Mid2 = async function (req, res, next) {
         if (!token) {
             return res.status(400).send({ Status: false, message: " Please enter the token" })
         }
+        console.log("GGGG:    ",)
+        try {
+            let decodedToken = jwt.verify(token, "FunctionUp Group55")
 
-        let decodedToken = jwt.verify(token, "FunctionUp Group55")
-
-        if (decodedToken) {
-            req.userId = decodedToken.UserId
-
-            next()
+            if (decodedToken) {
+                if (req.userId = decodedToken.UserId) {
+                    next()
+                }
+                else {
+                    return res.status(403).send({ status: false, message: "Invalid authentication" })
+                }
+            }
+        } catch (err) {
+            return res.status(400).send({ Status: false, message: "Token is not valid" })
         }
-        else {
-            return res.status(403).send({ status: false, message: "Invalid authentication" })
-        }
+
     }
     catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
