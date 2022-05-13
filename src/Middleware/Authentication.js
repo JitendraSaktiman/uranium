@@ -64,9 +64,9 @@ const Mid2 = async function (req, res, next) {
             return res.status(400).send({ Status: false, message: " Sorry query can't be empty" })
         }
 
-        if (query.userId && query.category && query.subcategory ||query.userId && query.category || query.userId && query.subcategory || query.subcategory && query.category) {
+        if (query.userId || query.subcategory   || query.category) {
 
-            let CheckBooks = await BookModel.findOne({ $or: [{userId:query.userId , category: query.category , subcategory:query.subcategory},{ userId: query.userId, category: query.category }, { userId: query.userId, subcategory: query.subcategory }, { subcategory: query.subcategory, category: query.category }] })
+            let CheckBooks = await BookModel.findOne({ $or: [{userId:query.userId },{ category: query.category }, {subcategory:query.subcategory},{ userId: query.userId, category: query.category }, { userId: query.userId, subcategory: query.subcategory }, { subcategory: query.subcategory, category: query.category }] })
 
             if (!CheckBooks) {
                 return res.status(400).send({ Status: false, message: "Book does not exist" });

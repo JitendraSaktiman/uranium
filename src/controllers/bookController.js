@@ -4,10 +4,10 @@ var moment = require('moment'); // require
 const bookModel = require("../models/bookModel");
 const reviewModel = require("../models/reviewModel")
 
-const formatYmd = date => date.toISOString().slice(0, 10);
+ 
 
 
-let date = formatYmd(new Date());
+// let date = formatYmd(new Date());
 
 
 
@@ -19,11 +19,12 @@ let ReviewRegex = /^[0-9]$/
 let titleRegex = /^[A-Za-z1-9]{1}[A-Za-z0-9 ,-]{1,}$/
 
 let ISBNRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$$/
+
 let dateRegex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 
 //----------------------------------CREATE BOOK-----------------------------***
 
-const Bookcreate = async function (req, res) {
+const Bookcreate = async function ( req, res) {
 
     try {
         //get data from body
@@ -108,7 +109,7 @@ const Bookcreate = async function (req, res) {
 
         if (CheckDelete) {
             if (CheckDelete.isDeleted === true) {
-                let updatedate = await BookModel.findOneAndUpdate(body, { releasedAt: body.releasedAt, deletedAt: new Date() })
+                let updatedate = await BookModel.findOneAndUpdate(body, {  deletedAt: new Date() })
                 return res.status(200).send({ Status: true, message: " Sorry  you can not create a book " })
             }
         }
