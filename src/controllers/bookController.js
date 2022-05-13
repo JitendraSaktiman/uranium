@@ -28,7 +28,7 @@ const Bookcreate = async function (req, res) {
     try {
         //get data from body
         let body = req.body
-         //if req.body is empty
+        //if req.body is empty
         if (Object.keys(body).length === 0) {
             return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
         }
@@ -45,7 +45,7 @@ const Bookcreate = async function (req, res) {
         if (!titleRegex.test(body.title)) {
             return res.status(400).send({ Status: false, message: " Title is not valid format" })
         }
-         // using validation
+        // using validation
         if (!body.excerpt) {
             return res.status(400).send({ Status: false, message: " excerpt is required" })
         }
@@ -105,7 +105,7 @@ const Bookcreate = async function (req, res) {
 
         let CheckDelete = await BookModel.findOne(body)
 
-        
+
         if (CheckDelete) {
             if (CheckDelete.isDeleted === true) {
                 let updatedate = await BookModel.findOneAndUpdate(body, { releasedAt: body.releasedAt, deletedAt: new Date() })
@@ -151,7 +151,7 @@ const resultBook = async function (req, res) {
 
         let FindBook = await BookModel.findById({ _id: req.params.bookId })
 
-        let reviewsData = await reviewModel.find({ bookId: req.params.bookId ,isDeleted:false }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
+        let reviewsData = await reviewModel.find({ bookId: req.params.bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
 
         let _id = FindBook._id;
         let title = FindBook.title
@@ -165,16 +165,16 @@ const resultBook = async function (req, res) {
         let createdAt = FindBook.createdAt
         let updatedAt = FindBook.updatedAt
         let deletedAt = FindBook.deletedAt
-        
 
-        if(FindBook.isDeleted=== true){
-            let resultant ={}
+
+        if (FindBook.isDeleted === true) {
+            let resultant = {}
             resultant = { _id, title, excerpt, userId, category, subcategory, deleted, reviews, deletedAt: FindBook.deletedAt, releasedAt, createdAt, updatedAt, reviewsData }
             return res.status(200).send({ Status: true, message: 'Success', data: resultant })
         }
-        
+
         let data = {}
-        data = { _id, title, excerpt, userId, category, subcategory, deleted, reviews, deletedAt:"", releasedAt, createdAt, updatedAt, reviewsData }
+        data = { _id, title, excerpt, userId, category, subcategory, deleted, reviews, deletedAt: "", releasedAt, createdAt, updatedAt, reviewsData }
 
         return res.status(200).send({ Status: true, message: 'Success', data: data })
 
@@ -237,11 +237,11 @@ const UpdateBook = async function (req, res) {
 const DeleteBook = async function (req, res) {
     try {
 
-        let data= req.params
+        let data = req.params
 
-        let CheckDeleted = await BookModel.findOneAndUpdate({$and:[{ _id: data.bookId },{ isDeleted: false }]},{$set:{isDeleted:true,deletedAt: new Date}},{ new: true })
+        let CheckDeleted = await BookModel.findOneAndUpdate({ $and: [{ _id: data.bookId }, { isDeleted: false }] }, { $set: { isDeleted: true, deletedAt: new Date } }, { new: true })
 
-        if(!CheckDeleted){
+        if (!CheckDeleted) {
             return res.status(404).send({ Status: false, message: " This book is deleted book" })
         }
 
