@@ -1,13 +1,7 @@
 const BookModel = require("../models/bookModel")
 const userModel = require("../models/userModel")
-var moment = require('moment'); // require
 const bookModel = require("../models/bookModel");
 const reviewModel = require("../models/reviewModel")
-
-const formatYmd = date => date.toISOString().slice(0, 10);
-
-
-let date = formatYmd(new Date());
 
 
 
@@ -86,10 +80,11 @@ const Bookcreate = async function (req, res) {
         if (!body.releasedAt) {
             return res.status(400).send({ Status: false, message: " releasedAt is required,please use this format YYYY-MM-DD " })
         }
+
         if (!dateRegex.test(body.releasedAt)) {
             return res.status(400).send({ Status: false, message: " releasedAt is not in valid format, please use this format YYYY-MM-DD " })
         }
-
+    
 
         let Checkuniquedata = await BookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }] })
         if (Checkuniquedata) {
@@ -219,7 +214,7 @@ const UpdateBook = async function (req, res) {
                 return res.status(200).send({ Status: true, message: 'Success', data: CheckDeleted })
             }
             else {
-                return res.status(404).send({ Status: false, message: " This book is deleted book 2" })
+                return res.status(404).send({ Status: false, message: " Sorry you can't update this book due to deleted book" })
             }
 
         }
