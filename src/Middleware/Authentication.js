@@ -60,33 +60,15 @@ const Mid2 = async function (req, res, next) {
             return res.status(400).send({ Status: false, message: " Please enter the token" })
         }
 
-        if (Object.keys(query).length === 0) {
-            return res.status(400).send({ Status: false, message: " Sorry query can't be empty" })
-        }
+        let decodedToken = jwt.verify(token, "FunctionUp Group55")
 
-        if (query.userId || query.subcategory   || query.category) {
+        if (decodedToken) {
+            req.userId = decodedToken.UserId
 
-            let CheckBooks = await BookModel.findOne({ $or: [{userId:query.userId },{ category: query.category }, {subcategory:query.subcategory},{ userId: query.userId, category: query.category }, { userId: query.userId, subcategory: query.subcategory }, { subcategory: query.subcategory, category: query.category }] })
-
-            if (!CheckBooks) {
-                return res.status(400).send({ Status: false, message: "Book does not exist" });
-            }
-
-            try {
-                let Decode_token = jwt.verify(token, "FunctionUp Group55")
-                if (Decode_token) {
-                    if (Decode_token.UserId != CheckBooks.userId) {
-                        return res.status(400).send({ Status: false, message: "This is not valid token for this User/Books" })
-                    }
-                    return next()
-                }
-            } catch (err) {
-                return res.status(400).send({ Status: false, message: "token is not valid/ token expire" })
-            }
-
+            next()
         }
         else {
-            return res.status(400).send({ Status: false, message: "Data are not in valid combination form from query" })
+            return res.status(403).send({ status: false, message: "Invalid authentication" })
         }
     }
     catch (err) {

@@ -3,15 +3,6 @@ const userModel = require("../models/userModel")
 const bookModel = require("../models/bookModel");
 const reviewModel = require("../models/reviewModel")
 
-<<<<<<< HEAD
- 
-
-
-// let date = formatYmd(new Date());
-
-=======
->>>>>>> 816dcc10435143eea69f5a8d1f3058eed94b239e
-
 
 // all regex validtaion
 
@@ -134,13 +125,50 @@ const GetBook = async function (req, res) {
 
         let query = req.query
 
-        let Checkbook = await bookModel.find({ $and: [query, { isDeleted: false }] }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
-        if (Checkbook.length > 0) {
-            return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
+        if(query.userId && query.category && query.subcategory){
+
+            let RecordBook = await bookModel.find({userId:query.userId,category:query.category,isDeleted:false,subcategory:query.subcategory}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+
+            if (RecordBook.length > 0) {
+                return res.status(200).send({ Status: true, message: 'Success', data: RecordBook })
+            }
+            else{
+                return res.status(400).send({ Status: false, message: " No data found  / can be isDeleted true" })
+            }
         }
 
-        return res.status(400).send({ Status: false, message: " No data found  / can be is Deleted true" })
+        if(query.userId && query.category || query.subcategory && query.category || query.userId && query.subcategory){
 
+            let Checkbook = await bookModel.find({$or:[{userId:query.userId,category:query.category,isDeleted:false},{userId:query.userId,subcategory:query.subcategory,isDeleted:false},{subcategory:query.subcategory,category:query.category,isDeleted:false}]}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+
+            if (Checkbook.length > 0) {
+                return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
+            }
+            else{
+                return res.status(400).send({ Status: false, message: " No data found  / can be isDeleted true" })
+            }
+        }
+
+        if(query.userId || query.category || query.subcategory){
+
+            let BookCheck = await bookModel.find({$or:[{userId:query.userId,isDeleted:false},{subcategory:query.subcategory,isDeleted:false},{category:query.category,isDeleted:false}]}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+
+            if (BookCheck.length > 0) {
+                return res.status(200).send({ Status: true, message: 'Success', data: BookCheck })
+            }
+            else{
+                return res.status(400).send({ Status: false, message: " No data found  / can be isDeleted true" })
+            }
+
+        }
+
+        let FindAllBook = await bookModel.find({isDeleted:false}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+        if (FindAllBook.length > 0) {
+            return res.status(200).send({ Status: true, message: 'Success', data: FindAllBook })
+        }
+        else{
+            return res.status(400).send({ Status: false, message: " No data found  / can be isDeleted true" })
+        }
 
     }
     catch (err) {
