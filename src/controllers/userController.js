@@ -148,7 +148,7 @@ const login = async function (req, res) {
             UserId: CheckUser._id,
             batch: "Uranium"
 
-        }, 'FunctionUp Group55', { expiresIn: '60s' });    // token expiry for 24hrs
+        }, 'FunctionUp Group55', { expiresIn: '300s' });    // token expiry for 24hrs
 
         res.setHeader("x-api-key", user_token);
         return res.status(201).send({ status: true, data: {token:user_token }});
