@@ -1,7 +1,21 @@
 const BookModel = require("../models/bookModel")
 const userModel = require("../models/userModel")
-const bookModel = require("../models/bookModel");
 const reviewModel = require("../models/reviewModel")
+var moment = require('moment');
+
+//validator
+
+const isValid = function (value) {
+    if (typeof (value) === 'undefined' || typeof (value) === null) {
+        return false
+    }
+    if (typeof (value).trim().length == 0) {
+        return false
+    }
+    if (typeof (value) === "string" && (value).trim().length > 0) {
+        return true
+    }
+}
 
 
 // all regex validtaion
@@ -24,6 +38,7 @@ const Bookcreate = async function (req, res) {
 
     try {
 
+        let body = req.body
         //if req.body is empty
 
         if (Object.keys(body).length === 0) {
@@ -31,8 +46,8 @@ const Bookcreate = async function (req, res) {
         }
 
         //***********======================   getting data from body  ======================***********   //
-
-        let body = req.body
+        
+    
         let lengthofuserid = body.userId
 
         if (!body.userId) {
@@ -61,7 +76,7 @@ const Bookcreate = async function (req, res) {
         //************************************************************************************************************************//
 
         if (body.isDeleted === true) {
-            return res.status(200).send({ Status: true, message: " Sorry  you are not allowed to create a book " })
+            return res.status(400).send({ Status: true, message: " Sorry  you are not allowed to create a book " })
         }
 
         // title validation
@@ -105,8 +120,10 @@ const Bookcreate = async function (req, res) {
         }
 
         if (body.reviews) {
-                return res.status(400).send({ Status: false, message: " Sorry you can not create review yourself" })
+            return res.status(400).send({ Status: false, message: " Sorry you can not create review yourself" })
         }
+
+        //==================================================================================================//
         // YYYY-MM-DD , we have to use validation for this
 
         if (!body.releasedAt) {
@@ -114,8 +131,16 @@ const Bookcreate = async function (req, res) {
         }
 
         if (!dateRegex.test(body.releasedAt)) {
-            return res.status(400).send({ Status: false, message: " releasedAt is not in valid format, please use this format YYYY-MM-DD " })
+            return res.status(400).send({ Status: false, message: " releasedAt is not in valid format/Wrong, please use this format YYYY-MM-DD " })
         }
+
+        let date1 = moment.utc(body.releasedAt, 'YYYY-MM-DD') // UNIVERSAL TIME COORDINATED,IF WE ONLY USE MOMENT SO IT WORK IN LOCAL MODE
+        if (!date1.isValid()) {
+            return res.status(400).send({ status: false, message: "Invalid Date" })
+        }
+        // body.releasedAt = date1
+
+        //*==============================================================================================*//
 
         let Checkuniquedata = await BookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }] })
         if (Checkuniquedata) {
@@ -149,7 +174,7 @@ const GetBook = async function (req, res) {
 
         if (query.userId && query.category && query.subcategory) {
 
-            let RecordBook = await bookModel.find({ userId: query.userId, category: query.category, isDeleted: false, subcategory: query.subcategory }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+            let RecordBook = await BookModel.find({ userId: query.userId, category: query.category, isDeleted: false, subcategory: query.subcategory }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
 
             if (RecordBook.length > 0) {
                 return res.status(200).send({ Status: true, message: 'Success', data: RecordBook })
@@ -163,7 +188,7 @@ const GetBook = async function (req, res) {
 
         if (query.userId && query.category || query.subcategory && query.category || query.userId && query.subcategory) {
 
-            let Checkbook = await bookModel.find({ $or: [{ userId: query.userId, category: query.category, isDeleted: false }, { userId: query.userId, subcategory: query.subcategory, isDeleted: false }, { subcategory: query.subcategory, category: query.category, isDeleted: false }] }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+            let Checkbook = await BookModel.find({ $or: [{ userId: query.userId, category: query.category, isDeleted: false }, { userId: query.userId, subcategory: query.subcategory, isDeleted: false }, { subcategory: query.subcategory, category: query.category, isDeleted: false }] }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
 
             if (Checkbook.length > 0) {
                 return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
@@ -178,7 +203,7 @@ const GetBook = async function (req, res) {
 
         if (query.userId || query.category || query.subcategory) {
 
-            let BookCheck = await bookModel.find({ $or: [{ userId: query.userId, isDeleted: false }, { subcategory: query.subcategory, isDeleted: false }, { category: query.category, isDeleted: false }] }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+            let BookCheck = await BookModel.find({ $or: [{ userId: query.userId, isDeleted: false }, { subcategory: query.subcategory, isDeleted: false }, { category: query.category, isDeleted: false }] }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
 
             if (BookCheck.length > 0) {
                 return res.status(200).send({ Status: true, message: 'Success', data: BookCheck })
@@ -191,7 +216,7 @@ const GetBook = async function (req, res) {
 
         //**********************  If query have no combination of userid,category,subcategory ********************** //
 
-        let FindAllBook = await bookModel.find({ isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+        let FindAllBook = await BookModel.find({ isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
         if (FindAllBook.length > 0) {
             return res.status(200).send({ Status: true, message: 'Success', data: FindAllBook })
         }
@@ -262,7 +287,7 @@ const UpdateBook = async function (req, res) {
 
         if (body.title || body.excerpt || body.releasedAt || body.ISBN) {
 
-            let CheckData = await bookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }] })
+            let CheckData = await BookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }] })
 
             if (CheckData) {
                 if (CheckData.isDeleted === true) {

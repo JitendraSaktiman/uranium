@@ -2,6 +2,11 @@ const BookModel = require("../models/bookModel")
 const userModel = require("../models/userModel")
 const jwt = require('jsonwebtoken');
 
+
+
+
+
+
 //*****----------------- This Middlewae Mid 1 is being used for all Book api -----------------------************/
 
 const Mid1 = async function (req, res, next) {
@@ -67,8 +72,5 @@ const Mid2 = async function (req, res, next) {
     }
 }
 
-// module.exports.Mid1 = Mid1
-// module.exports.Mid2 = Mid2
-// module.exports.TokenExpCheck=TokenExpCheck
 
 module.exports = { Mid1, Mid2 }
