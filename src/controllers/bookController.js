@@ -6,7 +6,7 @@ const reviewModel = require("../models/reviewModel")
 
 // all regex validtaion
 
-let nameRegex = /^[A-Za-z]{1}[A-Za-z ]{1,}$/
+let nameRegex = /^[A-Za-z]{1}[A-Za-z ,-]{1,}$/
 let ReviewRegex = /^[0-9]$/
 
 let titleRegex = /^[A-Za-z1-9]{1}[A-Za-z0-9 ,-]{0,10000}$/
@@ -24,17 +24,16 @@ const Bookcreate = async function (req, res) {
 
     try {
 
-        //***********======================   getting data from body  ======================***********   //
-        let body = req.body
-
-        // ************************************************************************************************************************//
-        let lengthofuserid = body.userId
-
         //if req.body is empty
 
         if (Object.keys(body).length === 0) {
             return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
         }
+
+        //***********======================   getting data from body  ======================***********   //
+
+        let body = req.body
+        let lengthofuserid = body.userId
 
         if (!body.userId) {
             return res.status(400).send({ Status: false, message: " userId is required" })
@@ -44,7 +43,7 @@ const Bookcreate = async function (req, res) {
         }
         //********** ===================================== Applying authorization ================================================= *//
 
-        const Verification = req.userId        // this is being import from mid2
+        const Verification = req.userId        // this is being import from middleware mid1
 
         let checkUserdetail = await userModel.findOne({ _id: body.userId })
 
@@ -62,7 +61,7 @@ const Bookcreate = async function (req, res) {
         //************************************************************************************************************************//
 
         if (body.isDeleted === true) {
-            return res.status(200).send({ Status: true, message: " Sorry  you are not allowed " })
+            return res.status(200).send({ Status: true, message: " Sorry  you are not allowed to create a book " })
         }
 
         // title validation
@@ -82,13 +81,14 @@ const Bookcreate = async function (req, res) {
         if (!titleRegex.test(body.excerpt)) {
             return res.status(400).send({ Status: false, message: " excerpt is not valid format" })
         }
-
+        //------- Checking ISBN & validation ---------------------- //
         if (!body.ISBN) {
             return res.status(400).send({ Status: false, message: " ISBN is required" })
         }
         if (!ISBNRegex.test(body.ISBN)) {
             return res.status(400).send({ Status: false, message: " ISBN is not in valid format" })
         }
+        //------- Checking ISBN & validation ---------------------- //
 
         if (!body.category) {
             return res.status(400).send({ Status: false, message: " category is required" })
@@ -105,9 +105,7 @@ const Bookcreate = async function (req, res) {
         }
 
         if (body.reviews) {
-            if (!ReviewRegex.test(body.reviews)) {
-                return res.status(400).send({ Status: false, message: " reviews can't use string" })
-            }
+                return res.status(400).send({ Status: false, message: " Sorry you can not create review yourself" })
         }
         // YYYY-MM-DD , we have to use validation for this
 
@@ -131,11 +129,7 @@ const Bookcreate = async function (req, res) {
 
         let CreateBook = await BookModel.create(body)
 
-        let CheckDelete = await BookModel.findOne(body)
-
-
         return res.status(201).send({ Status: true, message: 'Success', data: CreateBook })
-
 
     }
     catch (err) {
