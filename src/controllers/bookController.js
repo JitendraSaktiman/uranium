@@ -364,10 +364,5 @@ const DeleteBook = async function (req, res) {
 
 //-----------------------------EXPORT ALL API FUNCTION----------------------------------***
 
-// module.exports.Bookcreate = Bookcreate
-// module.exports.GetBook = GetBook
-// module.exports.resultBook = resultBook
-// module.exports.UpdateBook = UpdateBook
-// module.exports.DeleteBook = DeleteBook
 
 module.exports = { Bookcreate, GetBook, resultBook, UpdateBook, DeleteBook }
