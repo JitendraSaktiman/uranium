@@ -21,6 +21,9 @@ let ISBNRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$$/
 
 let dateRegex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 
+let today = new Date();
+let indianTime = today.toLocaleString("en-US", 'Asia/Kolkata');
+
 //----------------------------------CREATE BOOK-----------------------------***
 
 const Bookcreate = async function ( req, res) {
@@ -53,7 +56,6 @@ const Bookcreate = async function ( req, res) {
         if (!titleRegex.test(body.excerpt)) {
             return res.status(400).send({ Status: false, message: " excerpt is not valid format" })
         }
-
 
         if (!body.ISBN) {
             return res.status(400).send({ Status: false, message: " ISBN is required" })
@@ -109,7 +111,7 @@ const Bookcreate = async function ( req, res) {
 
         if (CheckDelete) {
             if (CheckDelete.isDeleted === true) {
-                let updatedate = await BookModel.findOneAndUpdate(body, {  deletedAt: new Date() })
+                let updatedate = await BookModel.findOneAndUpdate(body, {  deletedAt: indianTime })
                 return res.status(200).send({ Status: true, message: " Sorry  you can not create a book " })
             }
         }
@@ -131,15 +133,74 @@ const GetBook = async function (req, res) {
 
         let query = req.query
 
-        let Checkbook = await bookModel.find({ $and: [query, { isDeleted: false }] }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
-        if (Checkbook.length > 0) {
-            return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
+       //**********************  If query have all three combination of userid,category,subcategory ********************** //
+
+        if(query.userId && query.category && query.subcategory){
+
+            let RecordBook = await bookModel.find({userId:query.userId,category:query.category,isDeleted:false,subcategory:query.subcategory}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+
+            if (RecordBook.length > 0) {
+                return res.status(200).send({ Status: true, message: 'Success', data: RecordBook })
+            }
+            else{
+                return res.status(404).send({ Status: false, message: " No data found from all combination / can be isDeleted true" })
+            }
         }
 
-        return res.status(400).send({ Status: false, message: " No data found  / can be is Deleted true" })
+        //**********************  If query have any two combination of userid,category,subcategory ********************** //
+
+        if(query.userId && query.category || query.subcategory && query.category || query.userId && query.subcategory){
+
+            let Checkbook = await bookModel.find({$or:[{userId:query.userId,category:query.category,isDeleted:false},{userId:query.userId,subcategory:query.subcategory,isDeleted:false},{subcategory:query.subcategory,category:query.category,isDeleted:false}]}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+
+            if (Checkbook.length > 0) {
+                return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
+            }
+            else{
+                return res.status(404).send({ Status: false, message: " No data found with this two filter combination  / can be isDeleted true" })
+            }
+        }
 
 
-    }
+       //**********************  If query have any combination of userid,category,subcategory ********************** //
+
+        if(query.userId || query.category || query.subcategory){
+
+            let BookCheck = await bookModel.find({$or:[{userId:query.userId,isDeleted:false},{subcategory:query.subcategory,isDeleted:false},{category:query.category,isDeleted:false}]}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+
+            if (BookCheck.length > 0) {
+                return res.status(200).send({ Status: true, message: 'Success', data: BookCheck })
+            }
+            else{
+                return res.status(404).send({ Status: false, message: " No data found from single filter  / can be isDeleted true" })
+            }
+
+        }
+
+        //**********************  If query have no combination of userid,category,subcategory ********************** //
+
+        let FindAllBook = await bookModel.find({isDeleted:false}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+        if (FindAllBook.length > 0) {
+            return res.status(200).send({ Status: true, message: 'Success', data: FindAllBook })
+        }
+        else{
+            return res.status(404).send({ Status: false, message: " No data found without filter  / can be isDeleted true" })
+        }
+
+
+
+    //**********************  All in one  *** but it is not working in Filter ********************** //
+
+        // let FindAllBook = await bookModel.find({$or:[{query,isDeleted:false},{isDeleted:false}]}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+        // if (FindAllBook.length > 0) {
+        //     return res.status(200).send({ Status: true, message: 'Success', data: FindAllBook })
+        // }
+        // else{
+        //     return res.status(400).send({ Status: false, message: " No data found  / can be isDeleted true" })
+        // }
+
+
+ }
     catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
     }
@@ -154,23 +215,12 @@ const resultBook = async function (req, res) {
 
         let reviewsData = await reviewModel.find({ bookId: req.params.bookId, isDeleted: false }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 })
 
-        let _id = FindBook._id;
-        let title = FindBook.title
-        let excerpt = FindBook.excerpt
-        let userId = FindBook.userId
-        let category = FindBook.category
-        let subcategory = FindBook.subcategory
-        let deleted = FindBook.isDeleted
-        let reviews = FindBook.reviews
-        let releasedAt = FindBook.releasedAt
-        let createdAt = FindBook.createdAt
-        let updatedAt = FindBook.updatedAt
-        let deletedAt = FindBook.deletedAt
-
+    
+        const { _id, title, excerpt, userId, category, subcategory, deleted, reviews, deletedAt, releasedAt, createdAt, updatedAt } = FindBook
 
         if (FindBook.isDeleted === true) {
             let resultant = {}
-            resultant = { _id, title, excerpt, userId, category, subcategory, deleted, reviews, deletedAt: FindBook.deletedAt, releasedAt, createdAt, updatedAt, reviewsData }
+            resultant = {_id, title, excerpt, userId, category, subcategory, deleted, reviews, deletedAt, releasedAt, createdAt, updatedAt, reviewsData , reviewsData }
             return res.status(200).send({ Status: true, message: 'Success', data: resultant })
         }
 
@@ -240,13 +290,21 @@ const DeleteBook = async function (req, res) {
 
         let data = req.params
 
-        let CheckDeleted = await BookModel.findOneAndUpdate({ $and: [{ _id: data.bookId }, { isDeleted: false }] }, { $set: { isDeleted: true, deletedAt: new Date } }, { new: true })
+        let BookId= data.bookId
+
+        let CheckDeleted = await BookModel.findOneAndUpdate({ $and: [{ _id: data.bookId }, { isDeleted: false }] }, { $set: { isDeleted: true, deletedAt: indianTime } }, { new: true })
 
         if (!CheckDeleted) {
             return res.status(404).send({ Status: false, message: " This book is deleted book" })
         }
 
-        return res.status(200).send({ Status: true, message: 'Success', data: CheckDeleted })
+        // if book is being delete, then we will delete the all review for that book
+
+        let UpdateDeleteReview = await reviewModel.updateMany({bookId:BookId},{isDeleted:true})
+
+        // sending the bookdeleted data for response 
+
+        return res.status(200).send({ Status: true, message: 'Successfully deleted the book', data: CheckDeleted })
 
     } catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
