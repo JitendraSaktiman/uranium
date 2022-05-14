@@ -15,15 +15,15 @@ router.post('/login', userController.login)
 
 // ---------------------------BOOK API -------------------------------------***
 
-router.post('/books',Middleware.TokenExpCheck,Middleware.Mid1,BookController.Bookcreate)
+router.post('/books',Middleware.Mid1,Middleware.TokenExpCheck,BookController.Bookcreate)
 
-router.get('/books',Middleware.TokenExpCheck,Middleware.Mid2,BookController.GetBook)
+router.get('/books',Middleware.Mid2,Middleware.TokenExpCheck,BookController.GetBook)
 
-router.get('/books/:bookId',Middleware.TokenExpCheck,Middleware.Mid3,BookController.resultBook)
+router.get('/books/:bookId',Middleware.Mid3,Middleware.TokenExpCheck,BookController.resultBook)
 
-router.put("/books/:bookId",Middleware.TokenExpCheck,Middleware.Mid3,BookController.UpdateBook)
+router.put("/books/:bookId",Middleware.Mid3,Middleware.TokenExpCheck,BookController.UpdateBook)
 
-router.delete("/books/:bookId",Middleware.TokenExpCheck,Middleware.Mid3,BookController.DeleteBook)
+router.delete("/books/:bookId",Middleware.Mid3,Middleware.TokenExpCheck,BookController.DeleteBook)
 
 //-----------------------------REVIEW API ----------------------------------***
 

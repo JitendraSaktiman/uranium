@@ -116,8 +116,6 @@ const login = async function (req, res) {
             return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
         }
 
-
-
         //******------------------- Email validation -------------------****** //
 
         if (!body.email) {
@@ -150,9 +148,7 @@ const login = async function (req, res) {
             UserId: CheckUser._id,
             batch: "Uranium"
 
-        }, 'FunctionUp Group55', { expiresIn: '86400s' });    // token expiry for 24hrs
-
-
+        }, 'FunctionUp Group55', { expiresIn: '60' });    // token expiry for 24hrs
 
         res.setHeader("x-api-key", user_token);
         return res.status(201).send({ status: true, data: {token:user_token }});
@@ -164,5 +160,6 @@ const login = async function (req, res) {
 
 
 
-module.exports.Createuser = Createuser
-module.exports.login = login;
+// module.exports.Createuser = Createuser
+// module.exports.login = login;
+module.exports={Createuser,login}

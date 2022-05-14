@@ -18,7 +18,6 @@ const TokenExpCheck = async function (req, res, next) {
 
         var decoded = jwt_decode(token);
 
-        console.log("okay      ",decoded)
 
         var current_time = new Date().getTime() / 1000;
 
@@ -48,7 +47,6 @@ const Mid1 = async function (req, res, next) {
 
         let token = header['x-api-key'] || header['X-API-KEY']
 
-
         if (Object.keys(body).length === 0) {
             return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
         }
@@ -63,7 +61,6 @@ const Mid1 = async function (req, res, next) {
         }
 
         try {
-
 
             let Decode_token = jwt.verify(token, "FunctionUp Group55")
             if (Decode_token) {
@@ -159,7 +156,8 @@ const Mid3 = async function (req, res, next) {
     }
 }
 
-module.exports.Mid1 = Mid1
-module.exports.Mid2 = Mid2
-module.exports.Mid3 = Mid3
-module.exports.TokenExpCheck=TokenExpCheck
+// module.exports.Mid1 = Mid1
+// module.exports.Mid2 = Mid2
+// module.exports.Mid3 = Mid3
+// module.exports.TokenExpCheck=TokenExpCheck
+module.exports={Mid1,Mid2,Mid3,TokenExpCheck}

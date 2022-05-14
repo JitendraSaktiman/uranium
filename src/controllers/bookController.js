@@ -25,14 +25,17 @@ const Bookcreate = async function ( req, res) {
     try {
         //get data from body
         let body = req.body
+
         //if req.body is empty
+
         if (Object.keys(body).length === 0) {
             return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
         }
 
-        // if(body.isDeleted === true){
-        //     return res.status(200).send({ Status: true, message: " Sorry  you are not allowed " })
-        // }
+        if(body.isDeleted === true){
+            return res.status(200).send({ Status: true, message: " Sorry  you are not allowed " })
+        }
+
         // title validation
 
         if (!body.title) {
@@ -50,7 +53,6 @@ const Bookcreate = async function ( req, res) {
         if (!titleRegex.test(body.excerpt)) {
             return res.status(400).send({ Status: false, message: " excerpt is not valid format" })
         }
-
 
         if (!body.ISBN) {
             return res.status(400).send({ Status: false, message: " ISBN is required" })
@@ -103,13 +105,6 @@ const Bookcreate = async function ( req, res) {
 
         let CheckDelete = await BookModel.findOne(body)
 
-
-        if (CheckDelete) {
-            if (CheckDelete.isDeleted === true) {
-                let updatedate = await BookModel.findOneAndUpdate(body, {  deletedAt: indianTime })
-                return res.status(200).send({ Status: true, message: " Sorry  you can not create a book " })
-            }
-        }
 
         return res.status(201).send({ Status: true, message: 'Success', data: CreateBook })
 
@@ -308,8 +303,10 @@ const DeleteBook = async function (req, res) {
 
 //-----------------------------EXPORT ALL API FUNCTION----------------------------------***
 
-module.exports.Bookcreate = Bookcreate
-module.exports.GetBook = GetBook
-module.exports.resultBook = resultBook
-module.exports.UpdateBook = UpdateBook
-module.exports.DeleteBook = DeleteBook
+// module.exports.Bookcreate = Bookcreate
+// module.exports.GetBook = GetBook
+// module.exports.resultBook = resultBook
+// module.exports.UpdateBook = UpdateBook
+// module.exports.DeleteBook = DeleteBook
+
+module.exports= {Bookcreate,GetBook,resultBook,UpdateBook,DeleteBook}
