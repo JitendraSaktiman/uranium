@@ -131,7 +131,7 @@ const Bookcreate = async function (req, res) {
         }
 
         if (!dateRegex.test(body.releasedAt)) {
-            return res.status(400).send({ Status: false, message: " releasedAt is not in valid format/Wrong, please use this format YYYY-MM-DD " })
+            return res.status(400).send({ Status: false, message: " releasedAt is not in valid format/Wrong date, please use this format YYYY-MM-DD " })
         }
 
         let date1 = moment.utc(body.releasedAt, 'YYYY-MM-DD') // UNIVERSAL TIME COORDINATED,IF WE ONLY USE MOMENT SO IT WORK IN LOCAL MODE
