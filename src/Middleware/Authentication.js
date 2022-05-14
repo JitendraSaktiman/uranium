@@ -47,7 +47,9 @@ const Mid1 = async function (req, res, next) {
     catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
     }
-}
+} 
+
+//  Only Authentication for GET API query params
 
 const Mid2 = async function (req, res, next) {
     try {
@@ -81,7 +83,7 @@ const Mid2 = async function (req, res, next) {
     }
 }
 
-// AUTHORIZATION
+// Authentication & AUTHORIZATION for all API that are coming through the request.params
 
 const Mid3 = async function (req, res, next) {
     try {

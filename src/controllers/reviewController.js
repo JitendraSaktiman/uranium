@@ -70,8 +70,6 @@ const CreateReview = async function (req, res) {
         //SELECT PARTICULAR KEY
         let ShowReview = await reviewModel.findOne({ _id: ReviewCreate._id }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 }).populate("bookId")
 
-
-
         return res.status(201).send({ Status: true, message: 'Success', data: ShowReview })
 
     } catch (err) {

@@ -15,6 +15,9 @@ let ISBNRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$$/
 
 let dateRegex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 
+let today = new Date();
+let indianTime = today.toLocaleString("en-US", 'Asia/Kolkata');
+
 //----------------------------------CREATE BOOK-----------------------------***
 
 const Bookcreate = async function ( req, res) {
@@ -103,7 +106,7 @@ const Bookcreate = async function ( req, res) {
 
         if (CheckDelete) {
             if (CheckDelete.isDeleted === true) {
-                let updatedate = await BookModel.findOneAndUpdate(body, {  deletedAt: new Date() })
+                let updatedate = await BookModel.findOneAndUpdate(body, {  deletedAt: indianTime })
                 return res.status(200).send({ Status: true, message: " Sorry  you can not create a book " })
             }
         }
@@ -125,6 +128,8 @@ const GetBook = async function (req, res) {
 
         let query = req.query
 
+       //**********************  If query have all three combination of userid,category,subcategory ********************** //
+
         if(query.userId && query.category && query.subcategory){
 
             let RecordBook = await bookModel.find({userId:query.userId,category:query.category,isDeleted:false,subcategory:query.subcategory}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
@@ -133,9 +138,11 @@ const GetBook = async function (req, res) {
                 return res.status(200).send({ Status: true, message: 'Success', data: RecordBook })
             }
             else{
-                return res.status(400).send({ Status: false, message: " No data found  / can be isDeleted true" })
+                return res.status(400).send({ Status: false, message: " No data found from all combination / can be isDeleted true" })
             }
         }
+
+        //**********************  If query have any two combination of userid,category,subcategory ********************** //
 
         if(query.userId && query.category || query.subcategory && query.category || query.userId && query.subcategory){
 
@@ -145,9 +152,12 @@ const GetBook = async function (req, res) {
                 return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
             }
             else{
-                return res.status(400).send({ Status: false, message: " No data found  / can be isDeleted true" })
+                return res.status(400).send({ Status: false, message: " No data found with this two filter combination  / can be isDeleted true" })
             }
         }
+
+
+       //**********************  If query have any combination of userid,category,subcategory ********************** //
 
         if(query.userId || query.category || query.subcategory){
 
@@ -157,20 +167,35 @@ const GetBook = async function (req, res) {
                 return res.status(200).send({ Status: true, message: 'Success', data: BookCheck })
             }
             else{
-                return res.status(400).send({ Status: false, message: " No data found  / can be isDeleted true" })
+                return res.status(400).send({ Status: false, message: " No data found from single filter  / can be isDeleted true" })
             }
 
         }
+
+        //**********************  If query have no combination of userid,category,subcategory ********************** //
 
         let FindAllBook = await bookModel.find({isDeleted:false}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
         if (FindAllBook.length > 0) {
             return res.status(200).send({ Status: true, message: 'Success', data: FindAllBook })
         }
         else{
-            return res.status(400).send({ Status: false, message: " No data found  / can be isDeleted true" })
+            return res.status(400).send({ Status: false, message: " No data found without filter  / can be isDeleted true" })
         }
 
-    }
+
+
+    //**********************  All in one  *** but it is not working in Filter ********************** //
+
+        // let FindAllBook = await bookModel.find({$or:[{query,isDeleted:false},{isDeleted:false}]}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
+        // if (FindAllBook.length > 0) {
+        //     return res.status(200).send({ Status: true, message: 'Success', data: FindAllBook })
+        // }
+        // else{
+        //     return res.status(400).send({ Status: false, message: " No data found  / can be isDeleted true" })
+        // }
+
+
+ }
     catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
     }
@@ -260,13 +285,21 @@ const DeleteBook = async function (req, res) {
 
         let data = req.params
 
-        let CheckDeleted = await BookModel.findOneAndUpdate({ $and: [{ _id: data.bookId }, { isDeleted: false }] }, { $set: { isDeleted: true, deletedAt: new Date } }, { new: true })
+        let BookId= data.bookId
+
+        let CheckDeleted = await BookModel.findOneAndUpdate({ $and: [{ _id: data.bookId }, { isDeleted: false }] }, { $set: { isDeleted: true, deletedAt: indianTime } }, { new: true })
 
         if (!CheckDeleted) {
             return res.status(404).send({ Status: false, message: " This book is deleted book" })
         }
 
-        return res.status(200).send({ Status: true, message: 'Success', data: CheckDeleted })
+        // if book is being delete, then we will delete the all review for that book
+
+        let UpdateDeleteReview = await reviewModel.updateMany({bookId:BookId},{isDeleted:true})
+
+        // sending the bookdeleted data for response 
+
+        return res.status(200).send({ Status: true, message: 'Successfully deleted the book', data: CheckDeleted })
 
     } catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
