@@ -28,6 +28,7 @@ const TokenExpCheck = async function (req, res, next) {
             return res.status(400).send({ status: false, msg: "Token has expired" })
         }
         else{
+            
             return next()
         }
 
@@ -98,8 +99,10 @@ const Mid2 = async function (req, res, next) {
 
             let decodedToken = jwt.verify(token, "FunctionUp Group55")
 
+            console.log("okay:    ",decodedToken)
+
             if (decodedToken) {
-                if (req.userId == decodedToken.UserId) {
+                if (req.userId = decodedToken.UserId) {
                     next()
                 }
                 else {
