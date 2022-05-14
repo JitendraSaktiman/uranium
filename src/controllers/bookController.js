@@ -3,14 +3,11 @@ const userModel = require("../models/userModel")
 const bookModel = require("../models/bookModel");
 const reviewModel = require("../models/reviewModel")
 
-<<<<<<< HEAD
  
 
 
 // let date = formatYmd(new Date());
 
-=======
->>>>>>> 816dcc10435143eea69f5a8d1f3058eed94b239e
 
 
 // all regex validtaion
