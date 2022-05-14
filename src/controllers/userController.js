@@ -155,7 +155,4 @@ const login = async function (req, res) {
 }
 
 
-
-// module.exports.Createuser = Createuser
-// module.exports.login = login;
 module.exports={Createuser,login}

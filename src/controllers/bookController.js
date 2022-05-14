@@ -27,13 +27,11 @@ const isValid = function (value) {
 // all regex validtaion
 
 let nameRegex = /^[A-Za-z]{1}[A-Za-z ,-]{1,}$/
-let ReviewRegex = /^[0-9]$/
+
 
 let titleRegex = /^[A-Za-z1-9]{1}[A-Za-z0-9 ,-]{0,10000}$/
 
 let ISBNRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$$/
-
-let dateRegex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
 
 let today = new Date();
 let indianTime = today.toLocaleString("en-US", 'Asia/Kolkata');
@@ -125,7 +123,7 @@ const Bookcreate = async function (req, res) {
             return res.status(400).send({ Status: false, message: " subcategory is not in valid format" })
         }
 
-        if (body.reviews) {
+        if (body.reviews>0) {
             return res.status(400).send({ Status: false, message: " Sorry you can not create review yourself" })
         }
 
@@ -136,14 +134,11 @@ const Bookcreate = async function (req, res) {
             return res.status(400).send({ Status: false, message: " releasedAt is required,please use this format YYYY-MM-DD " })
         }
 
-        if (!dateRegex.test(body.releasedAt)) {
-            return res.status(400).send({ Status: false, message: " releasedAt is not in valid format/Wrong date, please use this format YYYY-MM-DD " })
-        }
-
         let date1 = moment.utc(body.releasedAt, 'YYYY-MM-DD') // UNIVERSAL TIME COORDINATED,IF WE ONLY USE MOMENT SO IT WORK IN LOCAL MODE
         if (!date1.isValid()) {
             return res.status(400).send({ status: false, message: "Invalid Date" })
         }
+
         body.releasedAt = date1
 
         //*==============================================================================================*//
@@ -230,19 +225,6 @@ const GetBook = async function (req, res) {
             return res.status(404).send({ Status: false, message: " No data found without filter  / can be isDeleted true" })
         }
 
-
-
-        //**********************  All in one  *** but it is not working in Filter ********************** //
-
-        // let FindAllBook = await bookModel.find({$or:[{query,isDeleted:false},{isDeleted:false}]}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
-        // if (FindAllBook.length > 0) {
-        //     return res.status(200).send({ Status: true, message: 'Success', data: FindAllBook })
-        // }
-        // else{
-        //     return res.status(400).send({ Status: false, message: " No data found  / can be isDeleted true" })
-        // }
-
-
     }
     catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
@@ -317,6 +299,27 @@ const UpdateBook = async function (req, res) {
             }
 
             //==================================================================================================//
+            if(body.title){
+                if (!titleRegex.test(body.title)) {
+                    return res.status(400).send({ Status: false, message: " Title is not valid format" })
+                }
+            }
+
+            //********************************************************************************************************/
+            
+            if(body.ISBN){
+                if(!ISBNRegex.test(body.ISBN)) {
+                    return res.status(400).send({ Status: false, message: " ISBN is not in valid format" })
+                }
+            }
+        
+            //********************************************************************************************************/
+            if(body.excerpt){
+                if (!titleRegex.test(body.excerpt)) {
+                    return res.status(400).send({ Status: false, message: " excerpt is not valid format" })
+                }
+            }
+            //--------------- Updating book -------------------------------------------------------------------//
 
             let CheckDeleted = await BookModel.findOneAndUpdate({ $and: [{ _id: data.bookId }, { isDeleted: false }] }, { $set: { title: body.title, excerpt: body.excerpt, ISBN: body.ISBN, releasedAt: body.releasedAt } }, { new: true })
 
@@ -367,10 +370,5 @@ const DeleteBook = async function (req, res) {
 
 //-----------------------------EXPORT ALL API FUNCTION----------------------------------***
 
-// module.exports.Bookcreate = Bookcreate
-// module.exports.GetBook = GetBook
-// module.exports.resultBook = resultBook
-// module.exports.UpdateBook = UpdateBook
-// module.exports.DeleteBook = DeleteBook
 
 module.exports = { Bookcreate, GetBook, resultBook, UpdateBook, DeleteBook }
