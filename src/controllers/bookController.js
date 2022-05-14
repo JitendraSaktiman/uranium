@@ -311,7 +311,28 @@ const UpdateBook = async function (req, res) {
             }
 
             //==================================================================================================//
+            if(body.ISBN){
+                if (!ISBNRegex.test(body.ISBN)) {
+                    return res.status(400).send({ Status: false, message: " ISBN is not in valid format" })
+                }
+            }
 
+            //********************************************************************************************************/
+            
+            if(body.ISBN){
+                if(!ISBNRegex.test(body.ISBN)) {
+                    return res.status(400).send({ Status: false, message: " ISBN is not in valid format" })
+                }
+            }
+        
+            //********************************************************************************************************/
+            if(body.excerpt){
+                if (!titleRegex.test(body.excerpt)) {
+                    return res.status(400).send({ Status: false, message: " excerpt is not valid format" })
+                }
+            }
+            //--------------- Updating book -------------------------------------------------------------------//
+            
             let CheckDeleted = await BookModel.findOneAndUpdate({ $and: [{ _id: data.bookId }, { isDeleted: false }] }, { $set: { title: body.title, excerpt: body.excerpt, ISBN: body.ISBN, releasedAt: body.releasedAt } }, { new: true })
 
             if (CheckDeleted) {
