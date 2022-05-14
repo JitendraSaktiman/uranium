@@ -1,10 +1,39 @@
 const BookModel = require("../models/bookModel")
 const userModel = require("../models/userModel")
 const jwt = require('jsonwebtoken')
-
+const jwt_decode = require('jwt-decode');
 
 
 //------------------------AUTHENTICATION----------------------------***
+
+const TokenExpCheck = async function (req, res, next) {
+
+    try {
+
+        let header = req.headers
+        let token = header['x-api-key'] || header['X-API-KEY']
+        if (!token) {
+            return res.status(400).send({ Status: false, message: " Please enter the token" })
+        }
+
+        var decoded = jwt_decode(token);
+        var current_time = new Date().getTime() / 1000;
+
+        if (current_time > decoded.exp) {
+            return res.status(400).send({ status: false, msg: "Token has expired" })
+        }
+        else{
+            return next()
+        }
+
+    } catch (err) {
+        return res.status(500).send({ Status: false, message: err.message })
+    }
+
+
+}
+
+//**************--------------- Authentication and Authorization , if request is coming from req.body ---------*********************//
 
 const Mid1 = async function (req, res, next) {
     try {
@@ -13,9 +42,6 @@ const Mid1 = async function (req, res, next) {
 
         let token = header['x-api-key'] || header['X-API-KEY']
 
-        if (!token) {
-            return res.status(400).send({ Status: false, message: " Please enter the token" })
-        }
 
         if (Object.keys(body).length === 0) {
             return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
@@ -31,8 +57,11 @@ const Mid1 = async function (req, res, next) {
         }
 
         try {
+
+
             let Decode_token = jwt.verify(token, "FunctionUp Group55")
             if (Decode_token) {
+
                 if (Decode_token.UserId != CheckUser._id) {
                     return res.status(400).send({ Status: false, message: "This is not valid token for this User/Books" })
                 }
@@ -40,16 +69,17 @@ const Mid1 = async function (req, res, next) {
             }
         }
         catch (err) {
-            return res.status(400).send({ Status: false, message: "token is not valid/ token expire" })
+            return res.status(400).send({ Status: false, message: "token is not valid" })
         }
 
     }
     catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
     }
-} 
+}
 
-//  Only Authentication for GET API query params
+//**************--------------------- Only Authentication for GET API query params --------------------*********************//
+
 
 const Mid2 = async function (req, res, next) {
     try {
@@ -58,11 +88,9 @@ const Mid2 = async function (req, res, next) {
 
         let token = header['x-api-key'] || header['X-API-KEY']
 
-        if (!token) {
-            return res.status(400).send({ Status: false, message: " Please enter the token" })
-        }
-        console.log("GGGG:    ",)
+
         try {
+
             let decodedToken = jwt.verify(token, "FunctionUp Group55")
 
             if (decodedToken) {
@@ -83,7 +111,8 @@ const Mid2 = async function (req, res, next) {
     }
 }
 
-// Authentication & AUTHORIZATION for all API that are coming through the request.params
+//**-------------- Authentication & AUTHORIZATION for all API that are coming through the request.params ------------------**//
+
 
 const Mid3 = async function (req, res, next) {
     try {
@@ -92,14 +121,6 @@ const Mid3 = async function (req, res, next) {
 
         let token = header['x-api-key'] || header['X-API-KEY']
 
-        if (!token) {
-            return res.status(400).send({ Status: false, message: " Please enter the token" })
-        }
-
-
-        if (!data) {
-            return res.status(400).send({ Status: false, message: "request params is empty" })
-        }
 
         let checkBook = await BookModel.findById({ _id: data.bookId })
 
@@ -133,3 +154,4 @@ const Mid3 = async function (req, res, next) {
 module.exports.Mid1 = Mid1
 module.exports.Mid2 = Mid2
 module.exports.Mid3 = Mid3
+module.exports.TokenExpCheck=TokenExpCheck
