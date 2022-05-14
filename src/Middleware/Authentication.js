@@ -37,29 +37,27 @@ const Mid1 = async function (req, res, next) {
         let body = req.body
         let header = req.headers
 
-        let lengthofuserid= body.userId
+        let lengthofuserid = body.userId
 
         let token = header['x-api-key'] || header['X-API-KEY']
 
-            //if req.body is empty
+        //if req.body is empty
 
         if (Object.keys(body).length === 0) {
-             return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
-         }
+            return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
+        }
 
         if (!body.userId) {
             return res.status(400).send({ Status: false, message: " userId is required" })
         }
-        if(lengthofuserid.length !==24){
-            return res.status(400).send({ Status: false, message: "UserId is not valid, please enter 24 digit of UserId" })  
+        if (lengthofuserid.length !== 24) {
+            return res.status(400).send({ Status: false, message: "UserId is not valid, please enter 24 digit of UserId" })
         }
 
         let CheckUser = await userModel.findOne({ _id: body.userId })
         if (!CheckUser) {
             return res.status(400).send({ Status: false, message: " No user found from given userId" })
         }
-
-
         try {
 
             let Decode_token = jwt.verify(token, "FunctionUp Group55")
@@ -99,12 +97,12 @@ const Mid2 = async function (req, res, next) {
             console.log("okay:    ", decodedToken)
 
             if (decodedToken) {
-                if (req.userId = decodedToken.UserId) {
-                    next()
-                }
-                else {
-                    return res.status(403).send({ status: false, message: "Invalid authentication" })
-                }
+                
+                req.userId = decodedToken.UserId
+                next()
+            }
+            else {
+                return res.status(403).send({ status: false, message: "Invalid authentication" })
             }
         } catch (err) {
             return res.status(400).send({ Status: false, message: "Token is not valid" })
@@ -125,9 +123,9 @@ const Mid3 = async function (req, res, next) {
         let header = req.headers
 
         let token = header['x-api-key'] || header['X-API-KEY']
-        
 
-        if(data.length !==24){
+
+        if (data.length !== 24) {
             return res.status(400).send({ Status: false, message: "Bookid is not valid, please enter 24 digit of bookid" })
         }
 
@@ -164,4 +162,4 @@ const Mid3 = async function (req, res, next) {
 // module.exports.Mid2 = Mid2
 // module.exports.Mid3 = Mid3
 // module.exports.TokenExpCheck=TokenExpCheck
-module.exports = { Mid1, Mid2,Mid3,TokenExpCheck }
+module.exports = { Mid1, Mid2, Mid3, TokenExpCheck }
