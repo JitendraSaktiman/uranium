@@ -23,6 +23,7 @@
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.3",
     "mongoose": "^6.3.2",
-    "validate-date": "^2.0.0"
+    "validate-date": "^2.0.0",
+    "validator": "^13.7.0"
   }
 }
