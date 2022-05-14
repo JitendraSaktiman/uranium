@@ -26,11 +26,6 @@ const Bookcreate = async function ( req, res) {
         //get data from body
         let body = req.body
 
-        //if req.body is empty
-
-        if (Object.keys(body).length === 0) {
-            return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
-        }
 
         if(body.isDeleted === true){
             return res.status(200).send({ Status: true, message: " Sorry  you are not allowed " })
