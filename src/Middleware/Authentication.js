@@ -99,7 +99,7 @@ const Mid2 = async function (req, res, next) {
             let decodedToken = jwt.verify(token, "FunctionUp Group55")
 
             if (decodedToken) {
-                if (req.userId = decodedToken.UserId) {
+                if (req.userId == decodedToken.UserId) {
                     next()
                 }
                 else {
