@@ -138,7 +138,7 @@ const GetBook = async function (req, res) {
                 return res.status(200).send({ Status: true, message: 'Success', data: RecordBook })
             }
             else{
-                return res.status(400).send({ Status: false, message: " No data found from all combination / can be isDeleted true" })
+                return res.status(404).send({ Status: false, message: " No data found from all combination / can be isDeleted true" })
             }
         }
 
@@ -152,7 +152,7 @@ const GetBook = async function (req, res) {
                 return res.status(200).send({ Status: true, message: 'Success', data: Checkbook })
             }
             else{
-                return res.status(400).send({ Status: false, message: " No data found with this two filter combination  / can be isDeleted true" })
+                return res.status(404).send({ Status: false, message: " No data found with this two filter combination  / can be isDeleted true" })
             }
         }
 
@@ -167,7 +167,7 @@ const GetBook = async function (req, res) {
                 return res.status(200).send({ Status: true, message: 'Success', data: BookCheck })
             }
             else{
-                return res.status(400).send({ Status: false, message: " No data found from single filter  / can be isDeleted true" })
+                return res.status(404).send({ Status: false, message: " No data found from single filter  / can be isDeleted true" })
             }
 
         }
@@ -179,7 +179,7 @@ const GetBook = async function (req, res) {
             return res.status(200).send({ Status: true, message: 'Success', data: FindAllBook })
         }
         else{
-            return res.status(400).send({ Status: false, message: " No data found without filter  / can be isDeleted true" })
+            return res.status(404).send({ Status: false, message: " No data found without filter  / can be isDeleted true" })
         }
 
 
