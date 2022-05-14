@@ -17,7 +17,12 @@ const TokenExpCheck = async function (req, res, next) {
         }
 
         var decoded = jwt_decode(token);
+
+        console.log("okay      ",decoded)
+
         var current_time = new Date().getTime() / 1000;
+
+        console.log("okay      ",current_time)
 
         if (current_time > decoded.exp) {
             return res.status(400).send({ status: false, msg: "Token has expired" })
