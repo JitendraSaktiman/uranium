@@ -138,7 +138,7 @@ const Bookcreate = async function (req, res) {
         if (!date1.isValid()) {
             return res.status(400).send({ status: false, message: "Invalid Date" })
         }
-        // body.releasedAt = date1
+        body.releasedAt = date1
 
         //*==============================================================================================*//
 
@@ -300,6 +300,17 @@ const UpdateBook = async function (req, res) {
                     return res.status(400).send({ Status: false, message: " This ISBN has been used already" })
                 }
             }
+            //============================Checking released at if coming=======================================//
+
+            if(body.releasedAt){
+                let date1 = moment.utc(body.releasedAt, 'YYYY-MM-DD') // UNIVERSAL TIME COORDINATED,IF WE ONLY USE MOMENT SO IT WORK IN LOCAL MODE
+                if (!date1.isValid()) {
+                    return res.status(400).send({ status: false, message: "Invalid Date" })
+                }
+                body.releasedAt = date1
+            }
+
+            //==================================================================================================//
 
             let CheckDeleted = await BookModel.findOneAndUpdate({ $and: [{ _id: data.bookId }, { isDeleted: false }] }, { $set: { title: body.title, excerpt: body.excerpt, ISBN: body.ISBN, releasedAt: body.releasedAt } }, { new: true })
 
