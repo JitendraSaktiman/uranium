@@ -17,25 +17,17 @@ const TokenExpCheck = async function (req, res, next) {
         }
 
         var decoded = jwt_decode(token);
-
-
         var current_time = new Date().getTime() / 1000;
-
-        console.log("okay      ",current_time)
 
         if (current_time > decoded.exp) {
             return res.status(400).send({ status: false, msg: "Token has expired" })
         }
-        else{
-            
+        else {
             return next()
         }
-
     } catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
     }
-
-
 }
 
 //**************--------------- Authentication and Authorization , if request is coming from req.body ---------*********************//
@@ -96,7 +88,7 @@ const Mid2 = async function (req, res, next) {
 
             let decodedToken = jwt.verify(token, "FunctionUp Group55")
 
-            console.log("okay:    ",decodedToken)
+            console.log("okay:    ", decodedToken)
 
             if (decodedToken) {
                 if (req.userId = decodedToken.UserId) {
@@ -125,7 +117,6 @@ const Mid3 = async function (req, res, next) {
         let header = req.headers
 
         let token = header['x-api-key'] || header['X-API-KEY']
-
 
         let checkBook = await BookModel.findById({ _id: data.bookId })
 
@@ -160,4 +151,4 @@ const Mid3 = async function (req, res, next) {
 // module.exports.Mid2 = Mid2
 // module.exports.Mid3 = Mid3
 // module.exports.TokenExpCheck=TokenExpCheck
-module.exports={Mid1,Mid2,Mid3,TokenExpCheck}
+module.exports = { Mid1, Mid2, Mid3, TokenExpCheck }
