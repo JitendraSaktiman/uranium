@@ -29,9 +29,9 @@ router.delete("/books/:bookId",Middleware.Mid1,Middleware.Mid2,BookController.De
 
 router.post('/books/:bookId/review',ReviewController.CreateReview)
 
-router.put('/books/:bookId/review/:reviewId',ReviewController.ReviewUpdate)
+router.put('/books/:bookId/review/:reviewId',Middleware.Mid1,ReviewController.ReviewUpdate)
 
-router.delete('/books/:bookId/review/:reviewId',ReviewController.ReviewDelete)
+router.delete('/books/:bookId/review/:reviewId',Middleware.Mid1,ReviewController.ReviewDelete)
 
 
 module.exports = router;

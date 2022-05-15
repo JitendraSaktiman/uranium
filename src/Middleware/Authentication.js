@@ -11,7 +11,7 @@ const jwt = require('jsonwebtoken');
 
 const Mid1 = async function (req, res, next) {
     try {
-        let query = req.query
+        // let query = req.query
         let header = req.headers
 
         let token = header['x-api-key'] || header['X-API-KEY']

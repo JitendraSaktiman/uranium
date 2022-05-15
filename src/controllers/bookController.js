@@ -17,13 +17,6 @@ const isValid = function (value) {
     }
 }
 
- 
-
-
-// let date = formatYmd(new Date());
-
-
-
 // all regex validtaion
 
 let nameRegex = /^[A-Za-z]{1}[A-Za-z ,-]{1,}$/
@@ -50,8 +43,8 @@ const Bookcreate = async function (req, res) {
         }
 
         //***********======================   getting data from body  ======================***********   //
-        
-    
+
+
         let lengthofuserid = body.userId
 
         if (!body.userId) {
@@ -89,7 +82,7 @@ const Bookcreate = async function (req, res) {
             return res.status(400).send({ Status: false, message: " Title is required" })
         }
         // using  regex validation 
-        if (!titleRegex.test(body.title)) {
+        if (!isValid(body.title)) {
             return res.status(400).send({ Status: false, message: " Title is not valid format" })
         }
         // using validation
@@ -123,7 +116,7 @@ const Bookcreate = async function (req, res) {
             return res.status(400).send({ Status: false, message: " subcategory is not in valid format" })
         }
 
-        if (body.reviews>0) {
+        if (body.reviews > 0) {
             return res.status(400).send({ Status: false, message: " Sorry you can not create review yourself" })
         }
 
@@ -145,6 +138,8 @@ const Bookcreate = async function (req, res) {
 
         let Checkuniquedata = await BookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }] })
         if (Checkuniquedata) {
+
+            // return res.status(400).send({ Status: false, message: " This title/ISBN has been used already" })
             if (Checkuniquedata.title == body.title) {
                 return res.status(400).send({ Status: false, message: " This title has been used already" })
             }
@@ -206,7 +201,7 @@ const GetBook = async function (req, res) {
 
             let BookCheck = await BookModel.find({ $or: [{ userId: query.userId, isDeleted: false }, { subcategory: query.subcategory, isDeleted: false }, { category: query.category, isDeleted: false }] }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
 
-            if (BookCheck.length > 0) {
+            if (BookCheck) {
                 return res.status(200).send({ Status: true, message: 'Success', data: BookCheck })
             }
             else {
@@ -290,7 +285,7 @@ const UpdateBook = async function (req, res) {
             }
             //============================Checking released at if coming=======================================//
 
-            if(body.releasedAt){
+            if (body.releasedAt) {
                 let date1 = moment.utc(body.releasedAt, 'YYYY-MM-DD') // UNIVERSAL TIME COORDINATED,IF WE ONLY USE MOMENT SO IT WORK IN LOCAL MODE
                 if (!date1.isValid()) {
                     return res.status(400).send({ status: false, message: "Invalid Date" })
@@ -299,22 +294,22 @@ const UpdateBook = async function (req, res) {
             }
 
             //==================================================================================================//
-            if(body.title){
+            if (body.title) {
                 if (!titleRegex.test(body.title)) {
                     return res.status(400).send({ Status: false, message: " Title is not valid format" })
                 }
             }
 
             //********************************************************************************************************/
-            
-            if(body.ISBN){
-                if(!ISBNRegex.test(body.ISBN)) {
+
+            if (body.ISBN) {
+                if (!ISBNRegex.test(body.ISBN)) {
                     return res.status(400).send({ Status: false, message: " ISBN is not in valid format" })
                 }
             }
-        
+
             //********************************************************************************************************/
-            if(body.excerpt){
+            if (body.excerpt) {
                 if (!titleRegex.test(body.excerpt)) {
                     return res.status(400).send({ Status: false, message: " excerpt is not valid format" })
                 }
