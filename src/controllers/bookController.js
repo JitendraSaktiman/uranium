@@ -44,8 +44,8 @@ const Bookcreate = async function (req, res) {
         }
 
         //***********======================   getting data from body  ======================***********   //
-        
-    
+
+
         let lengthofuserid = body.userId
 
         if (!body.userId) {
@@ -101,6 +101,12 @@ const Bookcreate = async function (req, res) {
         if (!ISBNRegex.test(body.ISBN)) {
             return res.status(400).send({ Status: false, message: " ISBN is not in valid format" })
         }
+
+        if (typeof body.ISBN === "number") {
+            return res.status(400).send({ Status: false, message: " ISBN must be as a string" })
+        }
+
+
         //------- Checking ISBN & validation ---------------------- //
 
         if (!body.category) {
@@ -117,7 +123,7 @@ const Bookcreate = async function (req, res) {
             return res.status(400).send({ Status: false, message: " subcategory is not in valid format" })
         }
 
-        if (body.reviews>0) {
+        if (body.reviews > 0) {
             return res.status(400).send({ Status: false, message: " Sorry you can not create review yourself" })
         }
 
@@ -267,6 +273,13 @@ const UpdateBook = async function (req, res) {
             return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
         }
 
+        if (body.ISBN) {
+            if (typeof body.ISBN === "number") {
+                return res.status(400).send({ Status: false, message: " ISBN must be as a string" })
+            }
+
+        }
+
         if (body.title || body.excerpt || body.releasedAt || body.ISBN) {
 
             let CheckData = await BookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }] })
@@ -284,7 +297,7 @@ const UpdateBook = async function (req, res) {
             }
             //============================Checking released at if coming=======================================//
 
-            if(body.releasedAt){
+            if (body.releasedAt) {
                 let date1 = moment.utc(body.releasedAt, 'YYYY-MM-DD') // UNIVERSAL TIME COORDINATED,IF WE ONLY USE MOMENT SO IT WORK IN LOCAL MODE
                 if (!date1.isValid()) {
                     return res.status(400).send({ status: false, message: "Invalid Date" })
@@ -293,22 +306,22 @@ const UpdateBook = async function (req, res) {
             }
 
             //==============================Checking title at if coming============================================================//
-            if(body.title){
+            if (body.title) {
                 if (!titleRegex.test(body.title)) {
                     return res.status(400).send({ Status: false, message: " Title is not valid format" })
                 }
             }
 
             //****************************Checking title at if coming****************************************************************/
-            
-            if(body.ISBN){
-                if(!ISBNRegex.test(body.ISBN)) {
+
+            if (body.ISBN) {
+                if (!ISBNRegex.test(body.ISBN)) {
                     return res.status(400).send({ Status: false, message: " ISBN is not in valid format" })
                 }
             }
-        
+
             //****************************Checking excerpt at if coming**********************************************************/
-            if(body.excerpt){
+            if (body.excerpt) {
                 if (!titleRegex.test(body.excerpt)) {
                     return res.status(400).send({ Status: false, message: " excerpt is not valid format" })
                 }
