@@ -3,7 +3,9 @@ const reviewModel = require("../models/reviewModel")
 
 
 
-let nameRegex = /^[A-Za-z]{1}[A-Za-z ]{1,}$/
+let nameRegex = /^[A-Za-z]{1}[A-Za-z -]{1,}$/
+
+
 
 
 
@@ -40,7 +42,6 @@ const CreateReview = async function (req, res) {
                 return res.status(400).send({ Status: false, message: "Please enter the valid reviedwedBy name" })
             }
         }
-
 
         if (!body.rating) {
             return res.status(400).send({ Status: false, message: "Please enter the rating" })
