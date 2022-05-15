@@ -26,7 +26,7 @@ const CreateReview = async function (req, res) {
         if (data.length !== 24) {
             return res.status(400).send({ Status: false, message: "Bookid is not valid, please enter 24 digit of bookid" })
         }
-        
+
         let Checkbook = await BookModel.findOne({ _id: data, isDeleted: false })
 
         if (!Checkbook) {
@@ -135,7 +135,7 @@ const ReviewUpdate = async function (req, res) {
         }
         // update review, rating, reviewer's name
 
-        let UpdateReview= await reviewModel.findByIdAndUpdate({_id:ReviewId},{review:body.review, rating:body.rating, reviewedBy:body.reviewedBy},{new:true}).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 }).populate("bookId")
+        let UpdateReview = await reviewModel.findByIdAndUpdate({ _id: ReviewId }, { review: body.review, rating: body.rating, reviewedBy: body.reviewedBy }, { new: true }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 }).populate("bookId")
 
         return res.status(200).send({ Status: true, message: 'Success', data: UpdateReview })
 
@@ -174,20 +174,22 @@ const ReviewDelete = async function (req, res) {
             return res.status(400).send({ Status: false, message: "Review doccument does not exist / deleted review " })
         }
 
-        let Deleterieview= await reviewModel.findByIdAndUpdate({_id:ReviewId},{isDeleted:true})
+        let Deleterieview = await reviewModel.findByIdAndUpdate({ _id: ReviewId }, { isDeleted: true })
 
-        let UpdateCountReview = await BookModel.findByIdAndUpdate({_id:BookIddata},{$inc:{reviews:-1}})
+        let UpdateCountReview = await BookModel.findByIdAndUpdate({ _id: BookIddata }, { $inc: { reviews: -1 } })
 
         return res.status(200).send({ Status: true, message: 'Success', data: "You review has been deleted" })
 
-    }catch (err) {
+    } catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
     }
 
 }
 
-module.exports.ReviewUpdate = ReviewUpdate
+// module.exports.ReviewUpdate = ReviewUpdate
 
-module.exports.CreateReview = CreateReview
+// module.exports.CreateReview = CreateReview
 
-module.exports.ReviewDelete = ReviewDelete
+// module.exports.ReviewDelete = ReviewDelete
+
+module.exports = { ReviewDelete, CreateReview, ReviewUpdate }
