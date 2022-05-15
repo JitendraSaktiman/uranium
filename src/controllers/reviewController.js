@@ -20,9 +20,7 @@ const CreateReview = async function (req, res) {
         let data = req.params.bookId
         let body = req.body
 
-        if (!data) {
-            return res.status(400).send({ Status: false, message: "No book id found" })
-        }
+ 
         if (data.length !== 24) {
             return res.status(400).send({ Status: false, message: "Bookid is not valid, please enter 24 digit of bookid" })
         }
@@ -197,3 +195,5 @@ const ReviewDelete = async function (req, res) {
 
 
 module.exports = { ReviewDelete, CreateReview, ReviewUpdate }
+
+

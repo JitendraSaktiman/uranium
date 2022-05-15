@@ -277,7 +277,6 @@ const UpdateBook = async function (req, res) {
             if (typeof body.ISBN === "number") {
                 return res.status(400).send({ Status: false, message: " ISBN must be as a string" })
             }
-
         }
 
         if (body.title || body.excerpt || body.releasedAt || body.ISBN) {
@@ -306,13 +305,14 @@ const UpdateBook = async function (req, res) {
             }
 
             //==============================Checking title at if coming============================================================//
+            
             if (body.title) {
                 if (!titleRegex.test(body.title)) {
                     return res.status(400).send({ Status: false, message: " Title is not valid format" })
                 }
             }
 
-            //****************************Checking title at if coming****************************************************************/
+            //****************************Checking ISBN at if coming****************************************************************/
 
             if (body.ISBN) {
                 if (!ISBNRegex.test(body.ISBN)) {
