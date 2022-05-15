@@ -135,9 +135,13 @@ const ReviewUpdate = async function (req, res) {
         }
         // update review, rating, reviewer's name
 
-        let UpdateReview = await reviewModel.findByIdAndUpdate({ _id: ReviewId }, { review: body.review, rating: body.rating, reviewedBy: body.reviewedBy }, { new: true }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 }).populate("bookId")
-
-        return res.status(200).send({ Status: true, message: 'Success', data: UpdateReview })
+        let UpdateReview = await reviewModel.findOneAndUpdate({ _id: ReviewId, bookId:BookIddata }, { review: body.review, rating: body.rating, reviewedBy: body.reviewedBy }, { new: true }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 }).populate("bookId")
+        if(UpdateReview){
+            return res.status(200).send({ Status: true, message: 'Success', data: UpdateReview })
+        }
+        else{
+            return res.status(400).send({ Status: false, message: "Review document does not exist " }) 
+        }
 
     } catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
@@ -174,11 +178,16 @@ const ReviewDelete = async function (req, res) {
             return res.status(400).send({ Status: false, message: "Review doccument does not exist / deleted review " })
         }
 
-        let Deleterieview = await reviewModel.findByIdAndUpdate({ _id: ReviewId }, { isDeleted: true })
+        let Deleterieview = await reviewModel.findOneAndUpdate({ _id: ReviewId, bookId:BookIddata}, {isDeleted: true })
 
+        if(Deleterieview){
         let UpdateCountReview = await BookModel.findByIdAndUpdate({ _id: BookIddata }, { $inc: { reviews: -1 } })
-
         return res.status(200).send({ Status: true, message: 'Success', data: "You review has been deleted" })
+        }
+        else{
+            return res.status(400).send({ Status: false, message: "Review document does not exist " }) 
+        }
+        
 
     } catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
@@ -186,10 +195,5 @@ const ReviewDelete = async function (req, res) {
 
 }
 
-// module.exports.ReviewUpdate = ReviewUpdate
-
-// module.exports.CreateReview = CreateReview
-
-// module.exports.ReviewDelete = ReviewDelete
 
 module.exports = { ReviewDelete, CreateReview, ReviewUpdate }
