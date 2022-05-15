@@ -292,14 +292,14 @@ const UpdateBook = async function (req, res) {
                 body.releasedAt = date1
             }
 
-            //==================================================================================================//
+            //==============================Checking title at if coming============================================================//
             if(body.title){
                 if (!titleRegex.test(body.title)) {
                     return res.status(400).send({ Status: false, message: " Title is not valid format" })
                 }
             }
 
-            //********************************************************************************************************/
+            //****************************Checking title at if coming****************************************************************/
             
             if(body.ISBN){
                 if(!ISBNRegex.test(body.ISBN)) {
@@ -307,13 +307,13 @@ const UpdateBook = async function (req, res) {
                 }
             }
         
-            //********************************************************************************************************/
+            //****************************Checking excerpt at if coming**********************************************************/
             if(body.excerpt){
                 if (!titleRegex.test(body.excerpt)) {
                     return res.status(400).send({ Status: false, message: " excerpt is not valid format" })
                 }
             }
-            //--------------- Updating book -------------------------------------------------------------------//
+            //----------------------------------------- Updating book -----------------------------------------------------------//
 
             let CheckDeleted = await BookModel.findOneAndUpdate({ $and: [{ _id: data.bookId }, { isDeleted: false }] }, { $set: { title: body.title, excerpt: body.excerpt, ISBN: body.ISBN, releasedAt: body.releasedAt } }, { new: true })
 
