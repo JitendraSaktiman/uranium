@@ -21,6 +21,9 @@ const CreateReview = async function (req, res) {
         if (!data) {
             return res.status(400).send({ Status: false, message: "No book id found" })
         }
+        if (data.length !== 24) {
+            return res.status(400).send({ Status: false, message: "Bookid is not valid, please enter 24 digit of bookid" })
+        }
         
         let Checkbook = await BookModel.findOne({ _id: data, isDeleted: false })
 
@@ -89,6 +92,14 @@ const ReviewUpdate = async function (req, res) {
         let ReviewId = req.params.reviewId
         let body = req.body
 
+        if (ReviewId.length !== 24) {
+            return res.status(400).send({ Status: false, message: "ReviewId is not valid, please enter 24 digit of ReviewId" })
+        }
+
+        if (BookIddata.length !== 24) {
+            return res.status(400).send({ Status: false, message: "Bookid is not valid, please enter 24 digit of bookid" })
+        }
+
         let Checkbook = await BookModel.findOne({ _id: BookIddata, isDeleted: false })
 
         if (!Checkbook) {
@@ -141,6 +152,14 @@ const ReviewDelete = async function (req, res) {
 
         let BookIddata = req.params.bookId
         let ReviewId = req.params.reviewId
+
+        if (ReviewId.length !== 24) {
+            return res.status(400).send({ Status: false, message: "ReviewId is not valid, please enter 24 digit of ReviewId" })
+        }
+
+        if (BookIddata.length !== 24) {
+            return res.status(400).send({ Status: false, message: "Bookid is not valid, please enter 24 digit of bookid" })
+        }
 
         let Checkbook = await BookModel.findOne({ _id: BookIddata, isDeleted: false })
 

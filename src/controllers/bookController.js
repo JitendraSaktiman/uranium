@@ -66,7 +66,7 @@ const Bookcreate = async function (req, res) {
 
         if (checkUserdetail) {
             if (Verification != checkUserdetail._id) {
-                return res.status(400).send({ Status: false, message: "You are not authorise person" })
+                return res.status(400).send({ Status: false, message: "You are not authorise person for create the book" })
             }
         }
 
@@ -83,7 +83,7 @@ const Bookcreate = async function (req, res) {
             return res.status(400).send({ Status: false, message: " Title is required" })
         }
         // using  regex validation 
-        if (!titleRegex.test(body.title)) {
+        if (!isValid(body.title)) {
             return res.status(400).send({ Status: false, message: " Title is not valid format" })
         }
         // using validation
@@ -91,7 +91,7 @@ const Bookcreate = async function (req, res) {
             return res.status(400).send({ Status: false, message: " excerpt is required" })
         }
         // using  regex validation 
-        if (!titleRegex.test(body.excerpt)) {
+        if (!isValid(body.excerpt)) {
             return res.status(400).send({ Status: false, message: " excerpt is not valid format" })
         }
         //------- Checking ISBN & validation ---------------------- //
@@ -294,7 +294,7 @@ const UpdateBook = async function (req, res) {
 
             //==================================================================================================//
             if(body.title){
-                if (!titleRegex.test(body.title)) {
+                if (!isValid(body.title)) {
                     return res.status(400).send({ Status: false, message: " Title is not valid format" })
                 }
             }

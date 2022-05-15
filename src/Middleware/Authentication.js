@@ -11,7 +11,7 @@ const jwt = require('jsonwebtoken');
 
 const Mid1 = async function (req, res, next) {
     try {
-        let query = req.query
+      
         let header = req.headers
 
         let token = header['x-api-key'] || header['X-API-KEY']
@@ -47,7 +47,7 @@ const Mid2 = async function (req, res, next) {
             return res.status(400).send({ Status: false, message: "Bookid is not valid, please enter 24 digit of bookid" })
         }
 
-        let checkBook = await BookModel.findById({ _id: data })
+        let checkBook = await BookModel.findOne({ _id: data })
 
         if (!checkBook) {
             return res.status(400).send({ Status: false, message: "Book does not exist" })

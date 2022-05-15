@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken')
 
 //---------------------regex create for validation ----------------------------------***
  
-        let EmailRegex = /^[A-Za-z]{1}[A-Za-z0-9._]{1,}@[A-Za-z]{2,15}[.]{1}[a-z.]{2,5}$/
+        let EmailRegex = /^[A-Za-z]{1}[A-Za-z0-9._]{1,}@[A-Za-z]{2,15}[.]{1}[a-z.]{2,5}$/   //here i m not using @99acre.com :- accepatnce email something: @gmail/hotmail/yahoo etc.
         let Passwordregex = /^[A-Z0-9a-z]{1}[A-Za-z0-9.@#$&]{7,14}$/
 
         let Phoneregex = /^[6-9]{1}[0-9]{9}$/
@@ -98,7 +98,6 @@ const Createuser = async function (req, res) {
     catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
     }
-
 }
 
 //-------------------USER LOGIN----------------------------***
@@ -144,7 +143,7 @@ const login = async function (req, res) {
             UserId: CheckUser._id,
             batch: "Uranium"
 
-        }, 'FunctionUp Group55', { expiresIn: '86400s' });    // token expiry for 24hrs
+        }, 'FunctionUp Group55', { expiresIn: '30000s' });    // token expiry for 24hrs
 
         res.setHeader("x-api-key", user_token);
         return res.status(201).send({ status: true, data: {token:user_token }});
