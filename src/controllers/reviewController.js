@@ -3,7 +3,9 @@ const reviewModel = require("../models/reviewModel")
 
 
 
-let nameRegex = /^[A-Za-z]{1}[A-Za-z ]{1,}$/
+let nameRegex = /^[A-Za-z]{1}[A-Za-z -]{1,}$/
+
+
 
 
 
@@ -18,10 +20,11 @@ const CreateReview = async function (req, res) {
         let data = req.params.bookId
         let body = req.body
 
-        if (!data) {
-            return res.status(400).send({ Status: false, message: "No book id found" })
+ 
+        if (data.length !== 24) {
+            return res.status(400).send({ Status: false, message: "Bookid is not valid, please enter 24 digit of bookid" })
         }
-        
+
         let Checkbook = await BookModel.findOne({ _id: data, isDeleted: false })
 
         if (!Checkbook) {
@@ -37,7 +40,6 @@ const CreateReview = async function (req, res) {
                 return res.status(400).send({ Status: false, message: "Please enter the valid reviedwedBy name" })
             }
         }
-
 
         if (!body.rating) {
             return res.status(400).send({ Status: false, message: "Please enter the rating" })
@@ -89,6 +91,14 @@ const ReviewUpdate = async function (req, res) {
         let ReviewId = req.params.reviewId
         let body = req.body
 
+        if (ReviewId.length !== 24) {
+            return res.status(400).send({ Status: false, message: "ReviewId is not valid, please enter 24 digit of ReviewId" })
+        }
+
+        if (BookIddata.length !== 24) {
+            return res.status(400).send({ Status: false, message: "Bookid is not valid, please enter 24 digit of bookid" })
+        }
+
         let Checkbook = await BookModel.findOne({ _id: BookIddata, isDeleted: false })
 
         if (!Checkbook) {
@@ -123,9 +133,13 @@ const ReviewUpdate = async function (req, res) {
         }
         // update review, rating, reviewer's name
 
-        let UpdateReview= await reviewModel.findByIdAndUpdate({_id:ReviewId},{review:body.review, rating:body.rating, reviewedBy:body.reviewedBy},{new:true}).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 }).populate("bookId")
-
-        return res.status(200).send({ Status: true, message: 'Success', data: UpdateReview })
+        let UpdateReview = await reviewModel.findOneAndUpdate({ _id: ReviewId, bookId:BookIddata }, { review: body.review, rating: body.rating, reviewedBy: body.reviewedBy }, { new: true }).select({ _id: 1, bookId: 1, reviewedBy: 1, reviewedAt: 1, rating: 1, review: 1 }).populate("bookId")
+        if(UpdateReview){
+            return res.status(200).send({ Status: true, message: 'Success', data: UpdateReview })
+        }
+        else{
+            return res.status(400).send({ Status: false, message: "Review document does not exist " }) 
+        }
 
     } catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
@@ -142,6 +156,14 @@ const ReviewDelete = async function (req, res) {
         let BookIddata = req.params.bookId
         let ReviewId = req.params.reviewId
 
+        if (ReviewId.length !== 24) {
+            return res.status(400).send({ Status: false, message: "ReviewId is not valid, please enter 24 digit of ReviewId" })
+        }
+
+        if (BookIddata.length !== 24) {
+            return res.status(400).send({ Status: false, message: "Bookid is not valid, please enter 24 digit of bookid" })
+        }
+
         let Checkbook = await BookModel.findOne({ _id: BookIddata, isDeleted: false })
 
         if (!Checkbook) {
@@ -154,20 +176,24 @@ const ReviewDelete = async function (req, res) {
             return res.status(400).send({ Status: false, message: "Review doccument does not exist / deleted review " })
         }
 
-        let Deleterieview= await reviewModel.findByIdAndUpdate({_id:ReviewId},{isDeleted:true})
+        let Deleterieview = await reviewModel.findOneAndUpdate({ _id: ReviewId, bookId:BookIddata}, {isDeleted: true })
 
-        let UpdateCountReview = await BookModel.findByIdAndUpdate({_id:BookIddata},{$inc:{reviews:-1}})
-
+        if(Deleterieview){
+        let UpdateCountReview = await BookModel.findByIdAndUpdate({ _id: BookIddata }, { $inc: { reviews: -1 } })
         return res.status(200).send({ Status: true, message: 'Success', data: "You review has been deleted" })
+        }
+        else{
+            return res.status(400).send({ Status: false, message: "Review document does not exist " }) 
+        }
+        
 
-    }catch (err) {
+    } catch (err) {
         return res.status(500).send({ Status: false, message: err.message })
     }
 
 }
 
-module.exports.ReviewUpdate = ReviewUpdate
 
-module.exports.CreateReview = CreateReview
+module.exports = { ReviewDelete, CreateReview, ReviewUpdate }
 
-module.exports.ReviewDelete = ReviewDelete
+

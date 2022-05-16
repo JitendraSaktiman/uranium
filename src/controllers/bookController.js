@@ -65,7 +65,7 @@ const Bookcreate = async function (req, res) {
 
         if (checkUserdetail) {
             if (Verification != checkUserdetail._id) {
-                return res.status(400).send({ Status: false, message: "You are not authorise person" })
+                return res.status(400).send({ Status: false, message: "You are not authorise person for create the book" })
             }
         }
 
@@ -100,6 +100,12 @@ const Bookcreate = async function (req, res) {
         if (!ISBNRegex.test(body.ISBN)) {
             return res.status(400).send({ Status: false, message: " ISBN is not in valid format" })
         }
+
+        if (typeof body.ISBN === "number") {
+            return res.status(400).send({ Status: false, message: " ISBN must be as a string" })
+        }
+
+
         //------- Checking ISBN & validation ---------------------- //
 
         if (!body.category) {
@@ -268,6 +274,12 @@ const UpdateBook = async function (req, res) {
             return res.status(400).send({ Status: false, message: " Sorry Body can't be empty" })
         }
 
+        if (body.ISBN) {
+            if (typeof body.ISBN === "number") {
+                return res.status(400).send({ Status: false, message: " ISBN must be as a string" })
+            }
+        }
+
         if (body.title || body.excerpt || body.releasedAt || body.ISBN) {
 
             let CheckData = await BookModel.findOne({ $or: [{ title: body.title }, { ISBN: body.ISBN }] })
@@ -293,14 +305,15 @@ const UpdateBook = async function (req, res) {
                 body.releasedAt = date1
             }
 
-            //==================================================================================================//
+            //==============================Checking title at if coming============================================================//
+            
             if (body.title) {
                 if (!titleRegex.test(body.title)) {
                     return res.status(400).send({ Status: false, message: " Title is not valid format" })
                 }
             }
 
-            //********************************************************************************************************/
+            //****************************Checking ISBN at if coming****************************************************************/
 
             if (body.ISBN) {
                 if (!ISBNRegex.test(body.ISBN)) {
@@ -308,13 +321,13 @@ const UpdateBook = async function (req, res) {
                 }
             }
 
-            //********************************************************************************************************/
+            //****************************Checking excerpt at if coming**********************************************************/
             if (body.excerpt) {
                 if (!titleRegex.test(body.excerpt)) {
                     return res.status(400).send({ Status: false, message: " excerpt is not valid format" })
                 }
             }
-            //--------------- Updating book -------------------------------------------------------------------//
+            //----------------------------------------- Updating book -----------------------------------------------------------//
 
             let CheckDeleted = await BookModel.findOneAndUpdate({ $and: [{ _id: data.bookId }, { isDeleted: false }] }, { $set: { title: body.title, excerpt: body.excerpt, ISBN: body.ISBN, releasedAt: body.releasedAt } }, { new: true })
 

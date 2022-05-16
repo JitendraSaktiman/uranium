@@ -2,7 +2,6 @@ const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
 
-
     title: {
         type: String,
         required: "title is required",
@@ -28,7 +27,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: "Password is required",
-        //minLen 8, maxLen 15
+        minLen: 8, maxLen: 15
     },
     address: {
         street: { type: String },
